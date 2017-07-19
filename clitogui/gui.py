@@ -47,7 +47,8 @@ class Interface(tk.Frame):
                 else:
                     holder = tk.Variable(value = action.default)
                     wid = tk.Spinbox(self.parent, textvariable = holder)
-            elif type(action) == argparse._StoreTrueAction:
+            elif type(action) == argparse._StoreTrueAction\
+                or type(action) == argparse._StoreFalseAction:
                 type_return = bool
                 holder = tk.BooleanVar(value = action.default)
                 wid = tk.Checkbutton(self.parent, variable = holder)
