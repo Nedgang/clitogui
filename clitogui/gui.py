@@ -41,8 +41,12 @@ class Interface(tk.Frame):
 
             if type(action) == argparse._StoreAction:
                 type_return = str
-                holder = tk.Variable(value = action.default)
-                wid = tk.Spinbox(self.parent, textvariable = holder)
+                if action.choices != None:
+                    holder = tk.Variable(value = action.choices[0])
+                    wid = tk.OptionMenu(self.parent, holder, *action.choices)
+                else:
+                    holder = tk.Variable(value = action.default)
+                    wid = tk.Spinbox(self.parent, textvariable = holder)
             elif type(action) == argparse._StoreTrueAction:
                 type_return = bool
                 holder = tk.BooleanVar(value = action.default)
