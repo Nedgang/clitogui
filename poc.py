@@ -43,6 +43,9 @@ def create_parser() -> argparse.ArgumentParser:
                         action="store_true")
     parser.add_argument('-i','--iteration', type=int, choices=[0, 1, 2],\
                         help="Iterations number")
+    parser.add_argument('--sum', dest='accumulate', action='store_const',
+                    const=sum, default=max,
+                    help='sum the integers (default: find the max)')
     return parser
 
 ##########
