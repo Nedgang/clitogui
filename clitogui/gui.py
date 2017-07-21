@@ -47,12 +47,18 @@ class Interface(tk.Frame):
                 else:
                     holder = tk.Variable(value = action.default)
                     wid = tk.Spinbox(self.parent, textvariable = holder)
+
+            elif type(action) == argparse._StoreConstAction:
+                type_return = bool
+                holder = tk.BooleanVar()
+                wid = tk.Checkbutton(self.parent, variable = holder)
+
             elif type(action) == argparse._StoreTrueAction\
-                or type(action) == argparse._StoreFalseAction\
-                or type(action) == argparse._StoreConstAction:
+                or type(action) == argparse._StoreFalseAction:
                 type_return = bool
                 holder = tk.BooleanVar(value = action.default)
                 wid = tk.Checkbutton(self.parent, variable = holder)
+
             else:
                 raise TypeError("Unhandled type: {}".format(type(action)))
 
