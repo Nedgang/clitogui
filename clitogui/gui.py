@@ -49,6 +49,11 @@ class Interface(tk.Frame):
                     holder = tk.Variable(value = action.default)
                     wid = tk.Entry(self.parent, textvariable = holder)
 
+                elif type(action) == argparse._AppendAction:
+                    type_return = "append_action"
+                    holder = tk.Variable(value = action.default)
+                    wid = tk.Entry(self.parent, textvariable = holder)
+
                 elif type(action) == argparse._StoreConstAction:
                     type_return = bool
                     holder = tk.BooleanVar()
@@ -87,6 +92,13 @@ class Interface(tk.Frame):
             elif type_return == bool:
                 if holder.get() == True:
                     self.out_args.append(option)
+            # Append arguments
+            elif type_return == "append_action":
+                final_string = ""
+                for answer in holder.get().split():
+                    final_string += option+" "
+                    final_string += answer+" "
+                self.out_args.append(final_string[:-1])
             # Standard arguments
             else:
                 self.out_args.append(option)
