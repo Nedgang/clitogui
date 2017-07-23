@@ -49,6 +49,12 @@ class Interface(tk.Frame):
                     holder = tk.Variable(value = action.default)
                     wid = tk.Entry(self.parent, textvariable = holder)
 
+                elif type(action) == argparse._CountAction:
+                    type_return = int
+                    count_choice = range(0, 10)
+                    holder = tk.Variable(value = count_choice[0])
+                    wid = tk.OptionMenu(self.parent, holder, *count_choice)
+
                 elif type(action) == argparse._AppendAction:
                     type_return = "append_action"
                     holder = tk.Variable(value = action.default)
@@ -92,13 +98,15 @@ class Interface(tk.Frame):
             elif type_return == bool:
                 if holder.get() == True:
                     self.out_args.append(option)
+            # Count arguments
+            elif type_return == int:
+                for i in range(holder.get()):
+                    self.out_args.append(option)
             # Append arguments
             elif type_return == "append_action":
-                final_string = ""
-                for answer in holder.get().split():
-                    final_string += option+" "
-                    final_string += answer+" "
-                self.out_args.append(final_string[:-1])
+                for answer in str(holder.get()).split():
+                    self.out_args.append(option)
+                    self.out_args.append(answer)
             # Standard arguments
             else:
                 self.out_args.append(option)
