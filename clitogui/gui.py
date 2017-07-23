@@ -39,14 +39,15 @@ class Interface(tk.Frame):
             lab = tk.Label(self.parent, text=action.help, width=40)
             lab.grid(row = idx, column = 0)
 
-            if type(action) == argparse._StoreAction:
+            if type(action) == argparse._StoreAction or\
+                type(action) == argparse._AppendAction :
                 type_return = str
                 if action.choices != None:
                     holder = tk.Variable(value = action.choices[0])
                     wid = tk.OptionMenu(self.parent, holder, *action.choices)
                 else:
                     holder = tk.Variable(value = action.default)
-                    wid = tk.Spinbox(self.parent, textvariable = holder)
+                    wid = tk.Entry(self.parent, textvariable = holder)
 
             elif type(action) == argparse._StoreConstAction:
                 type_return = bool
@@ -91,6 +92,6 @@ class Interface(tk.Frame):
                 self.out_args.append(option)
                 self.out_args.append(str(holder.get()))
 
-        # print(self.out_args)
+        print(self.out_args)
         # Kill the GUI
         self.parent.quit()
