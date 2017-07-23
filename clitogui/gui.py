@@ -39,29 +39,29 @@ class Interface(tk.Frame):
             lab = tk.Label(self.parent, text=action.help, width=40)
             lab.grid(row = idx, column = 0)
 
-            if type(action) == argparse._StoreAction or\
-                type(action) == argparse._AppendAction :
-                type_return = str
-                if action.choices != None:
-                    holder = tk.Variable(value = action.choices[0])
-                    wid = tk.OptionMenu(self.parent, holder, *action.choices)
-                else:
+            if action.choices != None:
+                holder = tk.Variable(value = action.choices[0])
+                wid = tk.OptionMenu(self.parent, holder, *action.choices)
+
+            else:
+                if type(action) == argparse._StoreAction:
+                    type_return = str
                     holder = tk.Variable(value = action.default)
                     wid = tk.Entry(self.parent, textvariable = holder)
 
-            elif type(action) == argparse._StoreConstAction:
-                type_return = bool
-                holder = tk.BooleanVar()
-                wid = tk.Checkbutton(self.parent, variable = holder)
+                elif type(action) == argparse._StoreConstAction:
+                    type_return = bool
+                    holder = tk.BooleanVar()
+                    wid = tk.Checkbutton(self.parent, variable = holder)
 
-            elif type(action) == argparse._StoreTrueAction\
-                or type(action) == argparse._StoreFalseAction:
-                type_return = bool
-                holder = tk.BooleanVar(value = action.default)
-                wid = tk.Checkbutton(self.parent, variable = holder)
+                elif type(action) == argparse._StoreTrueAction\
+                    or type(action) == argparse._StoreFalseAction:
+                    type_return = bool
+                    holder = tk.BooleanVar(value = action.default)
+                    wid = tk.Checkbutton(self.parent, variable = holder)
 
-            else:
-                raise TypeError("Unhandled type: {}".format(type(action)))
+                else:
+                    raise TypeError("Unhandled type: {}".format(type(action)))
 
             wid.grid(row=idx, column=1)
 
