@@ -1,6 +1,9 @@
 #!/usr/bin/python3
 """
-
+File containing the GUI stuff:
+- Generation of the window
+- Widgets creation
+- Arguments return
 """
 
 ##########
@@ -34,11 +37,11 @@ class Interface(tk.Frame):
         Creation of a widget for each action in the parser.
         """
         for idx, action in enumerate(self.actions):
-            # print(action)
             # Label each widget with the help text.
             lab = tk.Label(self.parent, text=action.help, width=40)
             lab.grid(row = idx, column = 0)
 
+            # If choices are proposed:
             if action.choices != None:
                 type_return = str
                 holder = tk.Variable(value = action.choices[0])
@@ -91,7 +94,6 @@ class Interface(tk.Frame):
         Return values from the GUI.
         """
         for option, (type_return, holder) in self.holders.items():
-            # print(option, type_return, holder.get())
             # Positionnal argument (buggy if more than 1)
             if option == '':
                 self.out_args.append(str(holder.get()))
@@ -113,6 +115,5 @@ class Interface(tk.Frame):
                 self.out_args.append(option)
                 self.out_args.append(str(holder.get()))
 
-        print(self.out_args)
         # Kill the GUI
         self.parent.quit()
