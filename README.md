@@ -1,9 +1,10 @@
-# CLITOGUI
+# CLItoGUI
 Python extension to generate a GUI from argparse CLI.
 
+## Version:
+alpha
+
 ## TODO List:
-POC -> Alpha
-- Support all actions in argparse
 - Add documentation
 - Refactoring
 
