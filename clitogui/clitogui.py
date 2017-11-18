@@ -52,6 +52,7 @@ def clitogui(parser_function):
             construct the CLI for the parser.
             """
             root = tk.Tk()
+            # Use of Interface object from gui.py
             gui = Interface(root, argparse_args_extractor(self))
             root.mainloop()
             return self.old_parse_args(gui.out_args)
