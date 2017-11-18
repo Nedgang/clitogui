@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """
-
+Decorator file.
+Everything start from here.
 """
 
 ##########
@@ -23,8 +24,9 @@ UNWANTED_ACTION = ["_HelpAction"]
 #############
 def clitogui(parser_function):
     """
-    Decorator with everything in it.
-    #gazFactory
+    To add on the parser function.
+    Extract arguments from the parser and send them to the GUI constructor
+    (cf gui.py).
     """
 
     # ARGPARSE TO GUI
@@ -36,7 +38,10 @@ def clitogui(parser_function):
         def argparse_args_extractor(parser):
             """
             Generation of widgets based on the parser.
+            Input: Parser function
+            Output: Generator of arguments
             """
+            # We don't want to send Help and Version action
             for action in tuple(parser._actions):
                 if type(action) != argparse._HelpAction and\
                 type(action) != argparse._VersionAction:
@@ -44,7 +49,8 @@ def clitogui(parser_function):
 
         def argparse_gui_builder(self):
             """
-            Function to generate the GUI, and return arguments from it.
+            Function to generate the GUI, save arguments back from it, and
+            construct the CLI for the parser.
             """
             root = tk.Tk()
             gui = Interface(root, argparse_args_extractor(self))
@@ -55,15 +61,17 @@ def clitogui(parser_function):
             """
             Change ArgParse.parse_args function.
             """
+            # Saving the old argument parser for later
             ArgumentParser.old_parse_args = ArgumentParser.parse_args
-            # Here is the deal
+            # Replace the parse_args function by our own, to allow call from
+            # the user script
             ArgumentParser.parse_args = argparse_gui_builder
             return payload(*args, **kwargs)
 
         argparse_alterator.__name__ = payload.__name__
         return argparse_alterator
 
-    # Allow to ignore clitogui in CLI
+    # Allow to ignore clitogui in the CLI, for testing purpose
     if IGNORE_COMMAND in sys.argv:
         sys.argv.remove(IGNORE_COMMAND)
         return parser_function
