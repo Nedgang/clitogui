@@ -40,6 +40,7 @@ class Interface(tk.Frame):
             lab.grid(row = idx, column = 0)
 
             if action.choices != None:
+                type_return = str
                 holder = tk.Variable(value = action.choices[0])
                 wid = tk.OptionMenu(self.parent, holder, *action.choices)
 
