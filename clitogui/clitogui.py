@@ -17,7 +17,6 @@ from collections import defaultdict
 from .gui import Interface
 
 IGNORE_COMMAND = "--cli"
-UNWANTED_ACTION = ["_HelpAction"]
 
 #############
 # DECORATOR #
