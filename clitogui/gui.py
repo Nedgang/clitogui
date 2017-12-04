@@ -14,15 +14,12 @@ import tkinter as tk
 
 import argparse
 
-WINDOW_HEIGHT, WINDOW_WIDTH = 800, 600
-
 #########
 # CLASS #
 #########
 class Interface(tk.Frame):
     def __init__(self, parent, clitogui_actions, *args, **kwargs):
         self.parent = parent
-        self.parent.geometry("{}x{}".format(WINDOW_HEIGHT, WINDOW_WIDTH))
         self.parent.title("ClitoGui POC") # ADAPTER AU TITRE DU PROGRAMME
 
         self.actions  = tuple(clitogui_actions)
