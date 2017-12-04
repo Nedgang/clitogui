@@ -46,8 +46,8 @@ def clitogui(parser_function):
 
         def argparse_gui_builder(self):
             """
-            Function to generate the GUI, save arguments back from it, and
-            construct the CLI for the parser.
+            Generate the GUI, save arguments back from it, and build the CLI
+            for the parser.
             """
             root = tk.Tk()
             # Use of Interface object from gui.py
