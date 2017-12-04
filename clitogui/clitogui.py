@@ -16,8 +16,6 @@ from collections import defaultdict
 
 from .gui import Interface
 
-IGNORE_COMMAND = "--cli"
-
 #############
 # DECORATOR #
 #############
@@ -72,7 +70,7 @@ def clitogui(parser_function):
         return argparse_alterator
 
     # Allow to ignore clitogui in the CLI, for testing purpose
-    if IGNORE_COMMAND in sys.argv:
+    if "--cli" in sys.argv:
         sys.argv.remove(IGNORE_COMMAND)
         return parser_function
     else:
