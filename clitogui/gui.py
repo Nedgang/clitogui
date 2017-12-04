@@ -82,9 +82,9 @@ class Interface(tk.Frame):
             else:
                 self.holders[action.option_strings[0]] = (type_return, holder)
 
-            # Launch button
-            tk.Button(self.parent, text="Run!", command=self.run).\
-                grid(row=len(self.actions), column = 0, columnspan=2)
+        # Launch button
+        tk.Button(self.parent, text="Run!", command=self.run).\
+            grid(row=len(self.actions), column = 0, columnspan=2)
 
     def run(self):
         """
