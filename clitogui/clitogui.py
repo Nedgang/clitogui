@@ -71,7 +71,7 @@ def clitogui(parser_function):
 
     # Allow to ignore clitogui in the CLI, for testing purpose
     if "--cli" in sys.argv:
-        sys.argv.remove(IGNORE_COMMAND)
+        sys.argv.remove("--cli")
         return parser_function
     else:
         return argparse_to_gui(parser_function)
