@@ -40,8 +40,8 @@ def clitogui(parser_function):
             """
             # We don't want to send Help and Version action
             for action in tuple(parser._actions):
-                if type(action) != argparse._HelpAction and\
-                type(action) != argparse._VersionAction:
+                if isinstance(action, argparse._HelpAction) and\
+                isinstance(action, argparse._VersionAction):
                     yield action
 
         def argparse_gui_builder(self):

@@ -45,29 +45,29 @@ class Interface(tk.Frame):
                 wid = tk.OptionMenu(self.parent, holder, *action.choices)
 
             else:
-                if type(action) == argparse._StoreAction:
+                if isinstance(action, argparse._StoreAction):
                     type_return = str
                     holder = tk.Variable(value = action.default)
                     wid = tk.Entry(self.parent, textvariable = holder)
 
-                elif type(action) == argparse._CountAction:
+                elif isinstance(action, argparse._CountAction):
                     type_return = int
                     count_choice = range(0, 10)
                     holder = tk.Variable(value = count_choice[0])
                     wid = tk.OptionMenu(self.parent, holder, *count_choice)
 
-                elif type(action) == argparse._AppendAction:
+                elif isinstance(action, argparse._AppendAction):
                     type_return = "append_action"
                     holder = tk.Variable(value = action.default)
                     wid = tk.Entry(self.parent, textvariable = holder)
 
-                elif type(action) == argparse._StoreConstAction:
+                elif isinstance(action, argparse._StoreConstAction):
                     type_return = bool
                     holder = tk.BooleanVar()
                     wid = tk.Checkbutton(self.parent, variable = holder)
 
-                elif type(action) == argparse._StoreTrueAction\
-                    or type(action) == argparse._StoreFalseAction:
+                elif isinstance(action, argparse._StoreTrueAction)\
+                    or isinstance(action, argparse._StoreFalseAction):
                     type_return = bool
                     holder = tk.BooleanVar(value = action.default)
                     wid = tk.Checkbutton(self.parent, variable = holder)
@@ -96,11 +96,11 @@ class Interface(tk.Frame):
                 self.out_args.append(str(holder.get()))
             # Boolean arguments
             elif type_return == bool:
-                if holder.get() == True:
+                if holder.get() is True:
                     self.out_args.append(option)
             # Count arguments
             elif type_return == int:
-                for i in range(holder.get()):
+                for _ in range(holder.get()):
                     self.out_args.append(option)
             # Append arguments
             elif type_return == "append_action":
