@@ -66,8 +66,8 @@ class Interface(tk.Frame):
                     holder = tk.BooleanVar()
                     wid = tk.Checkbutton(self.parent, variable = holder)
 
-                elif isinstance(action, argparse._StoreTrueAction)\
-                    or isinstance(action, argparse._StoreFalseAction):
+                elif isinstance(action, (argparse._StoreTrueAction,
+                                argparse._StoreFalseAction)):
                     type_return = bool
                     holder = tk.BooleanVar(value = action.default)
                     wid = tk.Checkbutton(self.parent, variable = holder)
