@@ -13,7 +13,7 @@ def test_help_extraction():
 
     parser = create_parser()
     for a in parser._actions: 
-        assert isinstance(a, argparse._HelpAction)
+        assert type(a) == argparse._HelpAction
 
 def test_version_extraction():
 
@@ -24,4 +24,4 @@ def test_version_extraction():
         return parser
 
     parser = create_parser()
-    assert any([isinstance(a, argparse._VersionAction) for a in parser._actions])
+    assert any([type(a) == argparse._VersionAction for a in parser._actions])
