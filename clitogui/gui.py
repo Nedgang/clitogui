@@ -11,6 +11,7 @@ File containing the GUI stuff:
 ##########
 import os
 import tkinter as tk
+import sys
 
 import argparse
 
@@ -20,8 +21,7 @@ import argparse
 class Interface(tk.Frame):
     def __init__(self, parent, clitogui_actions, *args, **kwargs):
         self.parent = parent
-        self.parent.title("ClitoGui POC") # ADAPTER AU TITRE DU PROGRAMME
-
+        self.parent.title(os.path.basename(sys.argv[0]).split(".")[0])
         self.actions  = tuple(clitogui_actions)
         self.out_args = [] # Will be populated with args
         self.holders  = {} # value holder of widgets
