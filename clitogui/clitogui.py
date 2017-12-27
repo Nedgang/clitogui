@@ -9,7 +9,6 @@ Everything start from here.
 ##########
 import argparse
 import sys
-import tkinter as tk
 
 from argparse import ArgumentParser
 from collections import defaultdict
@@ -49,10 +48,8 @@ def clitogui(parser_function):
             Generate the GUI, save arguments back from it, and build the CLI
             for the parser.
             """
-            root = tk.Tk()
             # Use of Interface object from gui.py
-            gui = Interface(root, argparse_args_extractor(self))
-            root.mainloop()
+            gui = Interface(argparse_args_extractor(self))
             return self.old_parse_args(gui.out_args)
 
         def argparse_alterator(*args, **kwargs):
