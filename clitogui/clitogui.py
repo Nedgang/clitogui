@@ -13,6 +13,7 @@ import sys
 from argparse import ArgumentParser
 from collections import defaultdict
 
+from .argument_extractor import Extracted_parser
 from .gui import Interface
 
 #############
@@ -31,25 +32,13 @@ def clitogui(parser_function):
         Function to setup the build of the GUI, from an argparse parser.
         """
 
-        def argparse_args_extractor(parser):
-            """
-            Generation of widgets based on the parser.
-            Input: Parser function
-            Output: Generator of arguments
-            """
-            # We don't want to send Help and Version action
-            for action in tuple(parser._actions):
-                if type(action) != argparse._HelpAction and\
-                type(action) != argparse._VersionAction:
-                    yield action
-
-        def argparse_gui_builder(self):
+        def gui_builder(self):
             """
             Generate the GUI, save arguments back from it, and build the CLI
             for the parser.
             """
             # Use of Interface object from gui.py
-            gui = Interface(argparse_args_extractor(self))
+            gui = Interface(Extracted_parser(self))
             return self.old_parse_args(gui.out_args)
 
         def argparse_alterator(*args, **kwargs):
@@ -60,7 +49,7 @@ def clitogui(parser_function):
             ArgumentParser.old_parse_args = ArgumentParser.parse_args
             # Replace the parse_args function by our own, to allow call from
             # the user script
-            ArgumentParser.parse_args = argparse_gui_builder
+            ArgumentParser.parse_args = gui_builder
             return payload(*args, **kwargs)
 
         argparse_alterator.__name__ = payload.__name__
