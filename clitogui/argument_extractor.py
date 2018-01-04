@@ -51,4 +51,3 @@ class Extracted_parser():
                 else:
                     raise TypeError("Unsupported argument type: ", type(action))
                 self.arguments.append(arg)
-            print(self.arguments)
