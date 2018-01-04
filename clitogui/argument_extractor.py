@@ -38,5 +38,3 @@ class Extracted_parser():
                     arg['help'] = action.help
                     arg['type'] = type(action)
                     self.arguments.append(arg)
-
-            print(self.arguments)
