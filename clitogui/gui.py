@@ -24,17 +24,10 @@ class Interface():
     def __init__(self, clitogui_actions, *args, **kwargs):
         # Interface data initialization
         self.title = os.path.basename(sys.argv[0]).split(".")[0]
-        self.actions  = tuple(clitogui_actions)
+        self.parser  = clitogui_actions
         self.out_args = [] # Will be populated with args
         self.results  = {} # Widgets final values
         self.hash_table = {}
-        print(self.actions)
-        for x in self.actions:
-            print(type(x))
-            if x.option_strings == []:
-                self.hash_table[x.dest] = x.option_strings
-            else:
-                self.hash_table[x.dest] = x.option_strings[0]
         # GUI configuration
         # Application initialization
         self.application = QApplication(sys.argv)
@@ -46,7 +39,7 @@ class Interface():
         """
         Creation of the window, and associated layout.
         """
-        # Layouts definition
+        # Layouts definition
         widget_layout = QFormLayout()
         main_layout = QVBoxLayout()
         # Interaction buttons
@@ -61,30 +54,30 @@ class Interface():
         main_layout.addWidget(buttons)
         dialog.setLayout(main_layout)
         # Creation of arguments widgets
-        for action in self.actions:
-            if action.choices != None:
+        for action in self.parser.arguments:
+            if action['choices'] != None:
                 widget = QComboBox()
-                widget.addItems([str(i) for i in action.choices])
+                widget.addItems([str(i) for i in action['choices']])
             else:
-                if type(action) == argparse._StoreTrueAction\
-                        or type(action) == argparse._StoreFalseAction:
+                if action['type'] == bool:
                     widget = QCheckBox()
-                    widget.setCheckState(action.default)
-                elif type(action) == argparse._StoreConstAction:
-                    widget = QCheckBox()
-                elif type(action) == argparse._StoreAction:
-                    widget = QLineEdit(action.default)
-                elif type(action) == argparse._CountAction:
+                    try:
+                        widget.setCheckState(action['default'])
+                    except:
+                        pass
+                elif action['type'] == str:
+                    widget = QLineEdit(action['default'])
+                elif action['type'] == int:
                     widget = QComboBox()
                     widget.addItems([str(i) for i in range[0,10]])
-                elif type(action) == argparse._AppendAction:
-                    widget = QLineEdit(action.default)
-                elif type(action) == argparse._AppendAction:
-                    widget = QLineEdit(action.default)
+                elif action['type'] == 'append_action':
+                    widget = QLineEdit(action['default'])
+                elif action['type'] == argparse._AppendAction:
+                    widget = QLineEdit(action['default'])
                 else:
-                    raise TypeError("Unhandled type: {}".format(type(action)))
-            widget.setToolTip(action.help)
-            widget_layout.addRow(action.dest, widget)
+                    raise TypeError("Unhandled type: {}".format(action['type']))
+            widget.setToolTip(action['help'])
+            widget_layout.addRow(action['name'], widget)
         # Widgets values recuperation
         if dialog.exec() == QDialog.Accepted:
             for i in range(widget_layout.rowCount()):
