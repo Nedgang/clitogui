@@ -25,9 +25,8 @@ class Interface():
         # Interface data initialization
         self.title = os.path.basename(sys.argv[0]).split(".")[0]
         self.parser  = clitogui_actions
-        self.out_args = [] # Will be populated with args
         self.results  = {} # Widgets final values
-        self.hash_table = {}
+        self.out_args = [] # Will be populated with args
         # GUI configuration
         # Application initialization
         self.application = QApplication(sys.argv)
@@ -78,6 +77,7 @@ class Interface():
                     raise TypeError("Unhandled type: {}".format(action['type']))
             widget.setToolTip(action['help'])
             widget_layout.addRow(action['name'], widget)
+
         # Widgets values recuperation
         if dialog.exec() == QDialog.Accepted:
             for i in range(widget_layout.rowCount()):
@@ -88,11 +88,16 @@ class Interface():
                 # Find widget value
                 value  = widget.metaObject().userProperty().read(widget)
                 self.results[label] = value
-            print(self.results)
-        # Writing the CLI from widgets values
-        print(self.hash_table)
-        for dest in self.results:
-            if self.hash_table[dest] != []:
-                self.out_args.append(self.hash_table[dest])
-            self.out_args.append(self.results[dest])
-        print(self.out_args)
+
+            for arg in self.parser.arguments:
+                if arg['cli'] != [] and arg['type'] != 'append_action':
+                    self.out_args.append(arg['cli'][0])
+                if arg['type'] == str:
+                    self.out_args.append(self.results[arg['name']])
+                elif arg['type'] == int:
+                    for i in range(0,self.results[arg['name']]):
+                        self.out_args.append(arg['cli'][0])
+                elif arg['type'] == 'append_action':
+                    for command in self.results[arg['name']].split(' '):
+                        self.out_args.append(arg['cli'][0])
+                        self.out_args.append(command)
