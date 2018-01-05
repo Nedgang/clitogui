@@ -4,12 +4,18 @@ Python extension to generate a GUI from argparse CLI.
 ## Version:
 alpha
 
+## Used packages:
+- pyQt5
+
+## Supported parser:
+ - Argparse
+
 ## TODO List:
 - Add documentation
 - Refactoring
 - Sub-parsers
 
-## Usage
+## Usage:
 Just add the decorator to parser function:
 
     from clitogui import clitogui
@@ -28,5 +34,5 @@ Just add the decorator to parser function:
                             help="Iterations number")
         return parser
 
-## How does it work?
+## How does it work?:
 TODO
