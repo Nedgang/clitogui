@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 """
-Decorator file.
 Everything start from here.
 """
 
@@ -11,7 +10,6 @@ import argparse
 import sys
 
 from argparse import ArgumentParser
-from collections import defaultdict
 
 from .argument_extractor import Extracted_parser
 from .gui import Interface
@@ -26,20 +24,20 @@ def clitogui(parser_function):
     (cf gui.py).
     """
 
+    def gui_builder(self):
+        """
+        Generate the GUI, save arguments back from it, and build the CLI
+        for the parser.
+        """
+        # Use of Interface object from gui.py
+        gui = Interface(Extracted_parser(self))
+        return self.old_parse_args(gui.out_args)
+
     # ARGPARSE TO GUI
     def argparse_to_gui(payload):
         """
         Function to setup the build of the GUI, from an argparse parser.
         """
-
-        def gui_builder(self):
-            """
-            Generate the GUI, save arguments back from it, and build the CLI
-            for the parser.
-            """
-            # Use of Interface object from gui.py
-            gui = Interface(Extracted_parser(self))
-            return self.old_parse_args(gui.out_args)
 
         def argparse_alterator(*args, **kwargs):
             """
@@ -60,4 +58,7 @@ def clitogui(parser_function):
         sys.argv.remove("--cli")
         return parser_function
     else:
-        return argparse_to_gui(parser_function)
+        if 'argparse' in sys.modules.keys():
+            return argparse_to_gui(parser_function)
+        else:
+            raise TypeError("Not supported parser")
