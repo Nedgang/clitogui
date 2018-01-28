@@ -101,3 +101,5 @@ class Interface():
                     for command in self.results[arg['name']].split(' '):
                         self.out_args.append(arg['cli'][0])
                         self.out_args.append(command)
+        else:
+            sys.exit()
