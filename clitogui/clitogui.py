@@ -1,12 +1,13 @@
 #!/usr/bin/python3
 """
-Everything start from here.
+Function to alter CLI parsing command.
+The new parsing command allow to automaticly generate au GUI and return
+argument in a CLI form.
 """
 
 ##########
 # IMPORT #
 ##########
-import argparse
 import sys
 
 from argparse import ArgumentParser
@@ -19,15 +20,15 @@ from .gui import Interface
 #############
 def clitogui(parser_function):
     """
-    To add on the parser function.
+    Function to use as a decorator, will be called before the decorated
+    function execution.
     Extract arguments from the parser and send them to the GUI constructor
     (cf gui.py).
     """
 
     def gui_builder(self):
         """
-        Generate the GUI, save arguments back from it, and build the CLI
-        for the parser.
+        Generate the GUI, and send the returned CLI to the parser.
         """
         # Use of Interface object from gui.py
         gui = Interface(Extracted_parser(self))
@@ -36,12 +37,12 @@ def clitogui(parser_function):
     # ARGPARSE TO GUI
     def argparse_to_gui(payload):
         """
-        Function to setup the build of the GUI, from an argparse parser.
+        Setup GUI build from an argparse parser.
         """
 
         def argparse_alterator(*args, **kwargs):
             """
-            Change ArgParse.parse_args function.
+            Change ArgParse.parse_args function to the gui_builder function.
             """
             # Saving the old argument parser for later
             ArgumentParser.old_parse_args = ArgumentParser.parse_args
