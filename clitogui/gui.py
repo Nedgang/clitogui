@@ -21,12 +21,17 @@ from PyQt5.QtCore import *
 # CLASS #
 #########
 class Interface():
-    def __init__(self, clitogui_actions, *args, **kwargs):
+    """
+    Automatized GUI using ExtractedParser object.
+    """
+    def __init__(self, clitogui_actions):
         # Interface data initialization
         self.title = os.path.basename(sys.argv[0]).split(".")[0]
-        self.parser  = clitogui_actions
-        self.results  = {} # Widgets final values
-        self.out_args = [] # Will be populated with args
+        self.parser = clitogui_actions
+        # Widgets final values
+        self.results = {}
+        # Arguments return values
+        self.out_args = []
         # GUI configuration
         # Application initialization
         self.application = QApplication(sys.argv)
@@ -68,7 +73,7 @@ class Interface():
                     widget = QLineEdit(action['default'])
                 elif action['type'] == int:
                     widget = QComboBox()
-                    widget.addItems([str(i) for i in range[0,10]])
+                    widget.addItems([str(i) for i in range[0, 10]])
                 elif action['type'] == 'append_action':
                     widget = QLineEdit(action['default'])
                 elif action['type'] == argparse._AppendAction:
@@ -84,9 +89,9 @@ class Interface():
                 # Find the widget at position i
                 widget = widget_layout.itemAt(i, QFormLayout.FieldRole).widget()
                 # Find widget label
-                label  = widget_layout.labelForField(widget).text()
+                label = widget_layout.labelForField(widget).text()
                 # Find widget value
-                value  = widget.metaObject().userProperty().read(widget)
+                value = widget.metaObject().userProperty().read(widget)
                 self.results[label] = value
 
             for arg in self.parser.arguments:
@@ -95,7 +100,7 @@ class Interface():
                 if arg['type'] == str:
                     self.out_args.append(self.results[arg['name']])
                 elif arg['type'] == int:
-                    for i in range(0,self.results[arg['name']]):
+                    for i in range(0, self.results[arg['name']]):
                         self.out_args.append(arg['cli'][0])
                 elif arg['type'] == 'append_action':
                     for command in self.results[arg['name']].split(' '):
