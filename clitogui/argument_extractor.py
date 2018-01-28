@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """
-
+Object used to standardise parser informations.
+Supported parser: argparse.
 """
 
 ##########
@@ -13,9 +14,12 @@ import argparse
 #########
 class Extracted_parser():
     """
+    Contain arguments and subparser list.
+    The constructor called depended on the parser used.
     """
     def __init__(self, parser):
         self.arguments = []
+        self.subparsers = []
         if type(parser) == argparse.ArgumentParser:
             self._argparse_extractor_(parser)
         else:
@@ -23,6 +27,8 @@ class Extracted_parser():
 
     def _argparse_extractor_(self, parser):
         """
+        Constructor used by the Extracted_parser object if the used parser
+        is argparse.
         """
         # We don't want help actions
         parser._actions = [x for x in parser._actions \
