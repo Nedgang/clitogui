@@ -12,7 +12,7 @@ import argparse
 #########
 # CLASS #
 #########
-class Extracted_parser():
+class ExtractedParser():
     """
     Contain arguments and subparser list.
     The constructor called depended on the parser used.
@@ -27,7 +27,7 @@ class Extracted_parser():
 
     def _argparse_extractor_(self, parser):
         """
-        Constructor used by the Extracted_parser object if the used parser
+        Constructor used by the ExtractedParser object if the used parser
         is argparse.
         """
         # We don't want help actions

@@ -12,7 +12,7 @@ import sys
 
 from argparse import ArgumentParser
 
-from .argument_extractor import Extracted_parser
+from .argument_extractor import ExtractedParser
 from .gui import Interface
 
 #############
@@ -31,7 +31,7 @@ def clitogui(parser_function):
         Generate the GUI, and send the returned CLI to the parser.
         """
         # Use of Interface object from gui.py
-        gui = Interface(Extracted_parser(self))
+        gui = Interface(ExtractedParser(self))
         return self.old_parse_args(gui.out_args)
 
     # ARGPARSE TO GUI
