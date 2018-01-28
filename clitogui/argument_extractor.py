@@ -20,7 +20,7 @@ class Extracted_parser():
     def __init__(self, parser):
         self.arguments = []
         self.subparsers = []
-        if type(parser) == argparse.ArgumentParser:
+        if isinstance(parser, argparse.ArgumentParser):
             self._argparse_extractor_(parser)
         else:
             raise TypeError("Not supported parser: ", type(parser))
@@ -32,9 +32,9 @@ class Extracted_parser():
         """
         # We don't want help actions
         parser._actions = [x for x in parser._actions \
-                           if type(x) != argparse._HelpAction]
+                           if not isinstance(x, argparse._HelpAction)]
         self.subparsers = [action for action in parser._actions\
-                           if type(action) == argparse._SubParsersAction]
+                           if isinstance(action, argparse._SubParsersAction)]
         # In case of no subparser:
         if self.subparsers == []:
             for action in parser._actions:
@@ -44,15 +44,15 @@ class Extracted_parser():
                 arg['choices'] = action.choices
                 arg['help'] = action.help
                 arg['default'] = action.default
-                if type(action) == argparse._StoreAction:
+                if isinstance(action, argparse._StoreAction):
                     arg['type'] = str
-                elif type(action) == argparse._StoreTrueAction or\
-                        type(action) == argparse._StoreConstAction or\
-                        type(action) == argparse._StoreFalseAction:
+                elif isinstance(action, (argparse._StoreTrueAction, \
+                                argparse._StoreConstAction,\
+                                argparse._StoreFalseAction)):
                     arg['type'] = bool
-                elif type(action) == argparse._AppendAction:
+                elif isinstance(action, argparse._AppendAction):
                     arg['type'] = "append_action"
-                elif type(action) == argparse._CountAction:
+                elif isinstance(action, argparse._CountAction):
                     arg['type'] = int
                 else:
                     raise TypeError("Unsupported argument type: ", type(action))
