@@ -10,13 +10,11 @@ alpha
 ## Supported parser:
  - Argparse
 
-## TODO List:
-- Add documentation
-- Refactoring
+## TODO List before bêta:
 - Sub-parsers
 
 ## Usage:
-Just add the decorator to parser function:
+Just add the decorator to the main or parser function:
 
     from clitogui import clitogui
 
