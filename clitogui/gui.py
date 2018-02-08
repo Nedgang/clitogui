@@ -42,11 +42,14 @@ class Interface():
 
         if self.parser.subparsers == []:
             self.widget_layout = QFormLayout()
-            # Layouts relations
+            self.__create_widgets__(self.widget_layout, self.parser.arguments)
             self.main_layout.addLayout(self.widget_layout)
-            self.__create_widgets__(self.widget_layout)
         else:
+            self.tabs = QTabWidget()
             self.__create_tabs__()
+            self.main_layout.addWidget(self.tabs)
+            # Pour récupérer le layout du tab sélectionné
+            # print(self.tabs.currentWidget().layout)
 
         # Interaction buttons
         buttons = QDialogButtonBox(QDialogButtonBox.Ok\
@@ -83,9 +86,9 @@ class Interface():
         else:
             sys.exit()
 
-    def __create_widgets__(self, parent):
+    def __create_widgets__(self, parent, arguments):
         # Creation of arguments widgets
-        for action in self.parser.arguments:
+        for action in arguments:
             if action['choices'] != None:
                 widget = QComboBox()
                 widget.addItems([str(i) for i in action['choices']])
@@ -111,4 +114,11 @@ class Interface():
             parent.addRow(action['name'], widget)
 
     def __create_tabs__(self):
-        pass
+        for subparser_title in self.parser.subparsers.choices:
+            subparser = [i for i in self.parser.subparsers.choices[subparser_title]._actions if not isinstance(i, argparse._HelpAction)]
+            tab = QWidget()
+            tab.layout = QFormLayout()
+            # self.__create_widgets__(tab.layout, subparser)
+            self.__create_widgets__(tab.layout, self.parser.arguments)
+            tab.setLayout(tab.layout)
+            self.tabs.addTab(tab, subparser_title)

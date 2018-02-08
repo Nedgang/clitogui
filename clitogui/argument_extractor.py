@@ -34,7 +34,7 @@ class ExtractedParser():
         parser._actions = [x for x in parser._actions \
                            if not isinstance(x, argparse._HelpAction)]
         self.subparsers = [action for action in parser._actions\
-                           if isinstance(action, argparse._SubParsersAction)]
+                           if isinstance(action, argparse._SubParsersAction)][0]
         # In case of no subparser:
         if self.subparsers == []:
             for action in parser._actions:
