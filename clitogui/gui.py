@@ -25,38 +25,65 @@ class Interface():
     Automatized GUI using ExtractedParser object.
     """
     def __init__(self, clitogui_actions):
-        # Interface data initialization
-        self.title = os.path.basename(sys.argv[0]).split(".")[0]
-        self.parser = clitogui_actions
-        # Widgets final values
-        self.results = {}
-        # Arguments return values
-        self.out_args = []
-        # GUI configuration
-        # Application initialization
-        self.application = QApplication(sys.argv)
-
-        # LAUNCH WIDGETS CREATION
-        self.__create_window__()
-
-    def __create_window__(self):
         """
         Creation of the window, and associated layout.
         """
+        # Widgets final values
+        self.results = {}
+        self.out_args = []
+        # Interface data initialization
+        self.title = os.path.basename(sys.argv[0]).split(".")[0]
+        self.parser = clitogui_actions
+        # GUI configuration
+        # Application initialization
+        self.application = QApplication(sys.argv)
         # Layouts definition
-        widget_layout = QFormLayout()
-        main_layout = QVBoxLayout()
+        self.main_layout = QVBoxLayout()
+
+        if self.parser.subparsers == []:
+            self.widget_layout = QFormLayout()
+            # Layouts relations
+            self.main_layout.addLayout(self.widget_layout)
+            self.__create_widgets__(self.widget_layout)
+        else:
+            self.__create_tabs__()
+
         # Interaction buttons
         buttons = QDialogButtonBox(QDialogButtonBox.Ok\
                                    |QDialogButtonBox.Cancel)
-        # Buttons link to dialog box
         dialog = QDialog()
         buttons.accepted.connect(dialog.accept)
         buttons.rejected.connect(QCoreApplication.instance().quit)
-        # Layouts relations
-        main_layout.addLayout(widget_layout)
-        main_layout.addWidget(buttons)
-        dialog.setLayout(main_layout)
+        self.main_layout.addWidget(buttons)
+        dialog.setLayout(self.main_layout)
+
+        # Widgets values recuperation
+        if dialog.exec() == QDialog.Accepted:
+            for i in range(self.widget_layout.rowCount()):
+                # Find the widget at position i
+                widget = self.widget_layout.itemAt(i, QFormLayout.FieldRole).widget()
+                # Find widget label
+                label = self.widget_layout.labelForField(widget).text()
+                # Find widget value
+                value = widget.metaObject().userProperty().read(widget)
+                self.results[label] = value
+
+            for arg in self.parser.arguments:
+                if arg['cli'] != [] and arg['type'] != 'append_action':
+                    self.out_args.append(arg['cli'][0])
+                if arg['type'] == str:
+                    self.out_args.append(self.results[arg['name']])
+                elif arg['type'] == int:
+                    for i in range(0, self.results[arg['name']]):
+                        self.out_args.append(arg['cli'][0])
+                elif arg['type'] == 'append_action':
+                    for command in self.results[arg['name']].split(' '):
+                        self.out_args.append(arg['cli'][0])
+                        self.out_args.append(command)
+        else:
+            sys.exit()
+
+    def __create_widgets__(self, parent):
         # Creation of arguments widgets
         for action in self.parser.arguments:
             if action['choices'] != None:
@@ -81,30 +108,7 @@ class Interface():
                 else:
                     raise TypeError("Unhandled type: {}".format(action['type']))
             widget.setToolTip(action['help'])
-            widget_layout.addRow(action['name'], widget)
+            parent.addRow(action['name'], widget)
 
-        # Widgets values recuperation
-        if dialog.exec() == QDialog.Accepted:
-            for i in range(widget_layout.rowCount()):
-                # Find the widget at position i
-                widget = widget_layout.itemAt(i, QFormLayout.FieldRole).widget()
-                # Find widget label
-                label = widget_layout.labelForField(widget).text()
-                # Find widget value
-                value = widget.metaObject().userProperty().read(widget)
-                self.results[label] = value
-
-            for arg in self.parser.arguments:
-                if arg['cli'] != [] and arg['type'] != 'append_action':
-                    self.out_args.append(arg['cli'][0])
-                if arg['type'] == str:
-                    self.out_args.append(self.results[arg['name']])
-                elif arg['type'] == int:
-                    for i in range(0, self.results[arg['name']]):
-                        self.out_args.append(arg['cli'][0])
-                elif arg['type'] == 'append_action':
-                    for command in self.results[arg['name']].split(' '):
-                        self.out_args.append(arg['cli'][0])
-                        self.out_args.append(command)
-        else:
-            sys.exit()
+    def __create_tabs__(self):
+        pass
