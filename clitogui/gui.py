@@ -40,7 +40,7 @@ class Interface():
         # Layouts definition
         self.main_layout = QVBoxLayout()
 
-        if self.parser.subparsers == []:
+        if self.parser.list_subparsers == []:
             self.widget_layout = QFormLayout()
             self.__create_widgets__(self.widget_layout, self.parser.arguments)
             self.main_layout.addLayout(self.widget_layout)
@@ -114,11 +114,10 @@ class Interface():
             parent.addRow(action['name'], widget)
 
     def __create_tabs__(self):
-        for subparser_title in self.parser.subparsers.choices:
-            subparser = [i for i in self.parser.subparsers.choices[subparser_title]._actions if not isinstance(i, argparse._HelpAction)]
+        print(self.parser.list_subparsers)
+        for subparser in self.parser.list_subparsers:
             tab = QWidget()
             tab.layout = QFormLayout()
-            # self.__create_widgets__(tab.layout, subparser)
-            self.__create_widgets__(tab.layout, self.parser.arguments)
+            self.__create_widgets__(tab.layout, subparser["list_actions"])
             tab.setLayout(tab.layout)
-            self.tabs.addTab(tab, subparser_title)
+            self.tabs.addTab(tab, subparser["name"])
