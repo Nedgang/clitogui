@@ -50,6 +50,7 @@ class Interface():
             self.main_layout.addWidget(self.tabs)
             # Pour récupérer le layout du tab sélectionné
             # print(self.tabs.currentWidget().layout)
+            self.widget_layout = self.tabs.currentWidget().layout
 
         # Interaction buttons
         buttons = QDialogButtonBox(QDialogButtonBox.Ok\
@@ -62,6 +63,7 @@ class Interface():
 
         # Widgets values recuperation
         if dialog.exec() == QDialog.Accepted:
+            # for i in range(self.tabs.currentWidget().layout.rowCount()):
             for i in range(self.widget_layout.rowCount()):
                 # Find the widget at position i
                 widget = self.widget_layout.itemAt(i, QFormLayout.FieldRole).widget()
