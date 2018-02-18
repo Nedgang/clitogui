@@ -30,30 +30,45 @@ class ExtractedParser():
         Constructor used by the ExtractedParser object if the used parser
         is argparse.
         """
-        # We don't want help actions
+        # We don't want help actions for now
         parser._actions = [x for x in parser._actions \
                            if not isinstance(x, argparse._HelpAction)]
-        self.subparsers = [action for action in parser._actions\
-                           if isinstance(action, argparse._SubParsersAction)][0]
-        # In case of no subparser:
-        if self.subparsers == []:
-            for action in parser._actions:
-                arg = {}
-                arg['cli'] = action.option_strings
-                arg['name'] = action.dest
-                arg['choices'] = action.choices
-                arg['help'] = action.help
-                arg['default'] = action.default
-                if isinstance(action, argparse._StoreAction):
-                    arg['type'] = str
-                elif isinstance(action, (argparse._StoreTrueAction, \
-                                argparse._StoreConstAction,\
-                                argparse._StoreFalseAction)):
-                    arg['type'] = bool
-                elif isinstance(action, argparse._AppendAction):
-                    arg['type'] = "append_action"
-                elif isinstance(action, argparse._CountAction):
-                    arg['type'] = int
-                else:
-                    raise TypeError("Unsupported argument type: ", type(action))
-                self.arguments.append(arg)
+
+        for action in parser._actions:
+            if isinstance(action, argparse._SubParsersAction):
+                for parser_name in action.choices:
+                    list_actions = [i for i in action.choices[parser_name]._actions\
+                                 if not isinstance(i, argparse._HelpAction)]
+                    subparser = {}
+                    subparser["name"] = parser_name
+                    subparser["list_actions"] = []
+                    for option in list_actions:
+                        subparser["list_actions"].append(self._argparse_action_normalizer(option))
+                    self.subparsers.append(subparser)
+            else:
+                self.arguments.append(self._argparse_action_normalizer(action))
+
+    def _argparse_action_normalizer(self, action):
+        """
+        Take an argparse action, and return it's normalized form for
+        ExtractedParser object.
+        """
+        arg = {}
+        arg['cli'] = action.option_strings
+        arg['name'] = action.dest
+        arg['choices'] = action.choices
+        arg['help'] = action.help
+        arg['default'] = action.default
+        if isinstance(action, argparse._StoreAction):
+            arg['type'] = str
+        elif isinstance(action, (argparse._StoreTrueAction, \
+                        argparse._StoreConstAction,\
+                        argparse._StoreFalseAction)):
+            arg['type'] = bool
+        elif isinstance(action, argparse._AppendAction):
+            arg['type'] = "append_action"
+        elif isinstance(action, argparse._CountAction):
+            arg['type'] = int
+        else:
+            raise TypeError("Unsupported argument type: ", type(action))
+        return arg
