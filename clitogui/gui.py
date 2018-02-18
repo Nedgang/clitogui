@@ -48,8 +48,6 @@ class Interface():
             self.tabs = QTabWidget()
             self.__create_tabs__()
             self.main_layout.addWidget(self.tabs)
-            # Pour récupérer le layout du tab sélectionné
-            # print(self.tabs.currentWidget().layout)
             self.widget_layout = self.tabs.currentWidget().layout
 
         # Interaction buttons
