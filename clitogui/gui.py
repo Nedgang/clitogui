@@ -61,7 +61,7 @@ class Interface():
 
         # Widgets values recuperation
         if dialog.exec() == QDialog.Accepted:
-            # for i in range(self.tabs.currentWidget().layout.rowCount()):
+            print(self.tabs.tabText(self.tabs.currentIndex()))
             for i in range(self.widget_layout.rowCount()):
                 # Find the widget at position i
                 widget = self.widget_layout.itemAt(i, QFormLayout.FieldRole).widget()
@@ -83,6 +83,8 @@ class Interface():
                     for command in self.results[arg['name']].split(' '):
                         self.out_args.append(arg['cli'][0])
                         self.out_args.append(command)
+
+            print(self.out_args)
         else:
             sys.exit()
 
@@ -114,10 +116,10 @@ class Interface():
             parent.addRow(action['name'], widget)
 
     def __create_tabs__(self):
-        print(self.parser.list_subparsers)
         for subparser in self.parser.list_subparsers:
             tab = QWidget()
             tab.layout = QFormLayout()
             self.__create_widgets__(tab.layout, subparser["list_actions"])
+            self.__create_widgets__(tab.layout, self.parser.arguments)
             tab.setLayout(tab.layout)
             self.tabs.addTab(tab, subparser["name"])
