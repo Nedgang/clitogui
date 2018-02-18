@@ -19,7 +19,7 @@ class ExtractedParser():
     """
     def __init__(self, parser):
         self.arguments = []
-        self.subparsers = []
+        self.list_subparsers = []
         if isinstance(parser, argparse.ArgumentParser):
             self._argparse_extractor_(parser)
         else:
@@ -44,7 +44,7 @@ class ExtractedParser():
                     subparser["list_actions"] = []
                     for option in list_actions:
                         subparser["list_actions"].append(self._argparse_action_normalizer(option))
-                    self.subparsers.append(subparser)
+                    self.list_subparsers.append(subparser)
             else:
                 self.arguments.append(self._argparse_action_normalizer(action))
 
