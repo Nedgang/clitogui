@@ -11,7 +11,10 @@ alpha
  - Argparse
 
 ## TODO List before bêta:
-- Sub-parsers
+- Testing
+- Reformating
+- Bug hunt
+- Documentation
 
 ## Usage:
 Just add the decorator to the main or parser function:
