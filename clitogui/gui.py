@@ -40,15 +40,17 @@ class Interface():
         # Layouts definition
         self.main_layout = QVBoxLayout()
 
+        # In case of subparser, used layout for widgets is not the same.
         if self.parser.list_subparsers == []:
+            self.has_subparser = False
             self.widget_layout = QFormLayout()
             self.__create_widgets__(self.widget_layout, self.parser.arguments)
             self.main_layout.addLayout(self.widget_layout)
         else:
+            self.has_subparser = True
             self.tabs = QTabWidget()
             self.__create_tabs__()
             self.main_layout.addWidget(self.tabs)
-            self.widget_layout = self.tabs.currentWidget().layout
 
         # Interaction buttons
         buttons = QDialogButtonBox(QDialogButtonBox.Ok\
@@ -61,24 +63,28 @@ class Interface():
 
         # Widgets values recuperation
         if dialog.exec() == QDialog.Accepted:
-            print(self.tabs.tabText(self.tabs.currentIndex()))
-            for i in range(self.widget_layout.rowCount()):
-                # Find the widget at position i
-                widget = self.widget_layout.itemAt(i, QFormLayout.FieldRole).widget()
-                # Find widget label
-                label = self.widget_layout.labelForField(widget).text()
-                # Find widget value
-                value = widget.metaObject().userProperty().read(widget)
-                self.results[label] = value
+            if self.has_subparser:
+                self.widget_layout = self.tabs.currentWidget().layout
+                current_tab_name = self.tabs.tabText(self.tabs.currentIndex())
+                # To remplace by a clean method
+                current_tab_arguments = [arg for arg in [x['list_actions'] for\
+                                        x in self.parser.list_subparsers\
+                                       if x['name'] == current_tab_name]][0]
+                self.parser.arguments = current_tab_arguments + self.parser.arguments
+                self.out_args.append(current_tab_name)
+
+            self.__widget_recuperation__()
 
             for arg in self.parser.arguments:
-                if arg['cli'] != [] and arg['type'] != 'append_action':
-                    self.out_args.append(arg['cli'][0])
+                # TOUT BUGGÉ, À REVOIR!
                 if arg['type'] == str:
                     self.out_args.append(self.results[arg['name']])
                 elif arg['type'] == int:
                     for i in range(0, self.results[arg['name']]):
                         self.out_args.append(arg['cli'][0])
+                elif arg['type'] == bool:
+                    if self.results[arg['name']]:
+                        self.out_args.append(arg['cli'])
                 elif arg['type'] == 'append_action':
                     for command in self.results[arg['name']].split(' '):
                         self.out_args.append(arg['cli'][0])
@@ -123,3 +129,13 @@ class Interface():
             self.__create_widgets__(tab.layout, self.parser.arguments)
             tab.setLayout(tab.layout)
             self.tabs.addTab(tab, subparser["name"])
+
+    def __widget_recuperation__(self):
+        for i in range(self.widget_layout.rowCount()):
+            # Find the widget at position i
+            widget = self.widget_layout.itemAt(i, QFormLayout.FieldRole).widget()
+            # Find widget label
+            label = self.widget_layout.labelForField(widget).text()
+            # Find widget value
+            value = widget.metaObject().userProperty().read(widget)
+            self.results[label] = value
