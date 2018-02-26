@@ -76,21 +76,21 @@ class Interface():
             self.__widget_recuperation__()
 
             for arg in self.parser.arguments:
-                # TOUT BUGGÉ, À REVOIR!
                 if arg['type'] == str:
+                    if arg['cli'] != []:
+                        self.out_args.append(arg['cli'])
                     self.out_args.append(self.results[arg['name']])
                 elif arg['type'] == int:
                     for i in range(0, self.results[arg['name']]):
-                        self.out_args.append(arg['cli'][0])
+                        self.out_args.append(arg['cli'])
                 elif arg['type'] == bool:
                     if self.results[arg['name']]:
                         self.out_args.append(arg['cli'])
                 elif arg['type'] == 'append_action':
                     for command in self.results[arg['name']].split(' '):
-                        self.out_args.append(arg['cli'][0])
+                        self.out_args.append(arg['cli'])
                         self.out_args.append(command)
 
-            print(self.out_args)
         else:
             sys.exit()
 
