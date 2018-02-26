@@ -54,7 +54,10 @@ class ExtractedParser():
         ExtractedParser object.
         """
         arg = {}
-        arg['cli'] = action.option_strings
+        if action.option_strings != []:
+            arg['cli'] = action.option_strings[0]
+        else:
+            arg['cli'] = action.option_strings
         arg['name'] = action.dest
         arg['choices'] = action.choices
         arg['help'] = action.help
