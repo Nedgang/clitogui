@@ -9,7 +9,6 @@ File containing the GUI stuff:
 ##########
 # IMPORT #
 ##########
-import os
 import sys
 
 import argparse
@@ -28,11 +27,11 @@ class Interface():
         """
         Creation of the window, and associated layout.
         """
-        # Widgets final values
+        # Arguments final values from widgets
         self.results = {}
+        # CLI which will be generated from self.results
         self.out_args = []
-        # Interface data initialization
-        self.title = os.path.basename(sys.argv[0]).split(".")[0]
+        # Interface initialization
         self.parser = clitogui_actions
         # GUI configuration
         # Application initialization
@@ -40,7 +39,7 @@ class Interface():
         # Layouts definition
         self.main_layout = QVBoxLayout()
 
-        # In case of subparser, used layout for widgets is not the same.
+        # In case of subparser, layout containing widgets is different.
         if self.parser.list_subparsers == []:
             self.has_subparser = False
             self.widget_layout = QFormLayout()
@@ -112,7 +111,7 @@ class Interface():
                     try:
                         widget.setCheckState(action['default'])
                     except:
-                        pass
+                        widget.setCheckState(False)
                 elif action['type'] == str:
                     widget = QLineEdit(action['default'])
                 elif action['type'] == int:
