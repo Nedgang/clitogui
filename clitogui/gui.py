@@ -95,6 +95,12 @@ class Interface():
             sys.exit()
 
     def __create_widgets__(self, parent, arguments):
+        """
+        Function to generate widgets from arguments list in parent layout.
+        In: - parent: QLayout
+            - arguments: List of arguments formatted by ExtractedParser object.
+        Out: a QWidget is added into the parent layout.
+        """
         # Creation of arguments widgets
         for action in arguments:
             if action['choices'] != None:
