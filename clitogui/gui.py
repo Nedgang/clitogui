@@ -141,6 +141,10 @@ class Interface():
             self.tabs.addTab(tab, subparser["name"])
 
     def __widget_recuperation__(self):
+        """
+        Allow to file ExtractedParser.results with the values of widgets
+        contained into widget_layout.
+        """
         for i in range(self.widget_layout.rowCount()):
             # Find the widget at position i
             widget = self.widget_layout.itemAt(i, QFormLayout.FieldRole).widget()
