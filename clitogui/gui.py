@@ -128,6 +128,10 @@ class Interface():
             parent.addRow(action['name'], widget)
 
     def __create_tabs__(self):
+        """
+        Create in ExtractedParser object the number of tabs needed for
+        subparsers.
+        """
         for subparser in self.parser.list_subparsers:
             tab = QWidget()
             tab.layout = QFormLayout()
