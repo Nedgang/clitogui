@@ -50,8 +50,7 @@ class ExtractedParser():
 
     def _argparse_action_normalizer(self, action):
         """
-        Take an argparse action, and return it's normalized form for
-        ExtractedParser object.
+        Return representation of given argparse action in the model.
         """
         arg = {}
         if action.option_strings != []:
