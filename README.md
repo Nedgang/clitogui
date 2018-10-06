@@ -1,22 +1,6 @@
 # CLItoGUI
-Python extension to generate a GUI from argparse CLI.
+Python package to generate a GUI from argparse CLI.
 
-## Version:
-alpha
-
-## Used packages:
-- pyQt5
-
-## Supported parser:
- - Argparse
-
-## TODO List before bêta:
-- Testing
-- Reformating
-- Bug hunt
-- Documentation
-
-## Usage:
 Just add the decorator to the main or parser function:
 
     from clitogui import clitogui
@@ -34,6 +18,20 @@ Just add the decorator to the main or parser function:
         parser.add_argument('-i','--iteration', type=int, choices=[0, 1, 2],\
                             help="Iterations number")
         return parser
+
+## Used packages:
+- pyQt5
+
+## Supported parser:
+ - Argparse
+
+## Supported GUI:
+- PyQt
+
+## TODO List before bêta:
+- Support for Tkinter (add `Environment :: X11 Applications :: GTK`)
+- Define Model
+- Add one simple test of parsing to Model
 
 ## How does it work?:
 TODO
