@@ -29,9 +29,11 @@ Just add the decorator to the main or parser function:
 - PyQt
 
 ## TODO List before bêta:
+- Add one simple test of cli parsing to Model
+- Define Model in its own module
+- Use of Model for [argument_extractor](clitogui/argument_extractor.py)
 - Support for Tkinter (add `Environment :: X11 Applications :: GTK`)
-- Define Model
-- Add one simple test of parsing to Model
+- Support for docopt
 
 ## How does it work?:
 TODO
