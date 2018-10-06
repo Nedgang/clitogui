@@ -1,0 +1,5 @@
+exclude Makefile
+exclude poc.py
+prune test
+recursive-include clitogui *.py
+include MANIFEST.py

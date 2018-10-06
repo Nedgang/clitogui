@@ -1,3 +1,4 @@
-clitogui/__pycache__/
 Pipfile*
 __pycache__
+clitogui.egg-info/
+venv/
