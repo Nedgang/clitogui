@@ -18,6 +18,7 @@ class ExtractedParser():
     The constructor called depended on the parser used.
     """
     def __init__(self, parser):
+        self.parser = parser
         self.arguments = []
         self.list_subparsers = []
         if isinstance(parser, argparse.ArgumentParser):

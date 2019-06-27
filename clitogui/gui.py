@@ -16,7 +16,24 @@ from PyQt5.QtCore import *
 
 
 class Interface(QDialog):
-    """Automatized GUI using ExtractedParser object"""
+    """Automatized GUI using ExtractedParser object
+
+    To create one instance, use static method `build_and_run`,
+    that will start Qt, run the Interface, and return it when closed.
+
+    The properties of interest for client code, once the dialog is closed:
+        - out_args: the arguments, as found in sys.argv
+        - parsed_args: the arguments, as parsed by the argument parser (such as argparse)
+
+    Note that subclasses can easily override:
+        - __init__: to get parameters from the outside
+        - _build_interface: to add buttons or other widgets
+        - _on_accept: to define a behavior to adopt when the dialog is successfully closed
+        - parsed_args: to modify the returned parsed_args object
+
+    See InteractiveInterface for a living subclass example.
+
+    """
 
     def __init__(self, clitogui_actions):
         """Creation of the window, and associated layout"""
@@ -27,36 +44,41 @@ class Interface(QDialog):
         self.out_args = []
         # Interface initialization
         self.parser = clitogui_actions
+        self.setLayout(self._build_interface())
+
+    def _build_interface(self):
+        "Must return the main layout"
         # Layouts definition
-        self.main_layout = QVBoxLayout()
+        main_layout = QVBoxLayout()
 
         # In case of subparser, layout containing widgets is different.
         if self.parser.list_subparsers == []:
             self.has_subparser = False
             self.widget_layout = QFormLayout()
             self.__create_widgets__(self.widget_layout, self.parser.arguments)
-            self.main_layout.addLayout(self.widget_layout)
+            main_layout.addLayout(self.widget_layout)
         else:
             self.has_subparser = True
             self.tabs = QTabWidget()
             self.__create_tabs__()
-            self.main_layout.addWidget(self.tabs)
+            main_layout.addWidget(self.tabs)
 
         # Interaction buttons
         self.buttons = QDialogButtonBox(QDialogButtonBox.Ok|QDialogButtonBox.Cancel)
         self.buttons.accepted.connect(self.accept)
         self.buttons.rejected.connect(QCoreApplication.instance().quit)
-        self.main_layout.addWidget(self.buttons)
-        self.setLayout(self.main_layout)
+        main_layout.addWidget(self.buttons)
+        return main_layout
 
     def exec(self):
         # Application initialization
-        if super().exec() == QDialog.Accepted:
-            self._on_exec()
+        retval = super().exec()
+        if retval == QDialog.Accepted:
+            self._on_accept()
         else:
             sys.exit()
-        return self
-    def _on_exec(self):
+
+    def _on_accept(self):
         "called when exited with 'OK'"
         self.out_args = self.parse_gui()
 
@@ -64,7 +86,9 @@ class Interface(QDialog):
     def build_and_run(cls, *args, **kwargs):
         app = QApplication(sys.argv)
         dialog = cls(*args, **kwargs)
-        return dialog.exec()
+        dialog.__app = app  # if forgotten, will throw segfaults
+        dialog.exec()
+        return dialog
 
     def parse_gui(self) -> list:
         "Return the list of command-line arguments described by GUI state"
@@ -102,15 +126,12 @@ class Interface(QDialog):
                 self.out_args.append(arg['type'](self.results[arg['name']]))
             else:
                 raise ValueError("Type {} is unhandled".format(arg['type']))
-        print('OUT ARGS:', out_args)
+        # print('OUT ARGS:', out_args)
         return out_args
 
-    @property
-    def other_outputs(self) -> []: return []  # no other outputs to communicate
-
-    @property
     def parsed_args(self):
-        return self.parser.parser.old_parse_args(self.out_args)
+        ret = self.parser.parser.old_parse_args(self.out_args)
+        return ret
 
     def __create_widgets__(self, parent, arguments):
         """
