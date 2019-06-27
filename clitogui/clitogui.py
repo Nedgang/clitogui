@@ -10,6 +10,7 @@ argument in a CLI form.
 ##########
 import sys
 
+from functools import wraps
 from argparse import ArgumentParser
 
 from .argument_extractor import ExtractedParser
@@ -40,6 +41,7 @@ def clitogui(parser_function):
         Setup GUI build from an argparse parser.
         """
 
+        @wraps(payload)
         def argparse_alterator(*args, **kwargs):
             """
             Change ArgParse.parse_args function to the gui_builder function.
@@ -51,7 +53,6 @@ def clitogui(parser_function):
             ArgumentParser.parse_args = gui_builder
             return payload(*args, **kwargs)
 
-        argparse_alterator.__name__ = payload.__name__
         return argparse_alterator
 
     # Allow to ignore clitogui in the CLI, for testing purpose
