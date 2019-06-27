@@ -5,62 +5,44 @@ The new parsing command allow to automaticly generate au GUI and return
 argument in a CLI form.
 """
 
-##########
-# IMPORT #
-##########
-import sys
-
 from functools import wraps
 from argparse import ArgumentParser
 
 from .argument_extractor import ExtractedParser
 from .gui import Interface
 
-#############
-# DECORATOR #
-#############
+
 def clitogui(parser_function):
+    """Decorator for a function returning a parser (such as argparse.ArgumentParser).
+
+    Will patch the returned parser to make it use a GUI when no arguments
+    are explicitely provided.
+
+    Cf gui.py for GUI definition.
     """
-    Function to use as a decorator, will be called before the decorated
-    function execution.
-    Extract arguments from the parser and send them to the GUI constructor
-    (cf gui.py).
-    """
 
-    def gui_builder(self):
-        """
-        Generate the GUI, and send the returned CLI to the parser.
-        """
-        # Use of Interface object from gui.py
-        gui = Interface(ExtractedParser(self))
-        return self.old_parse_args(gui.out_args)
+    def patch_parser(parser):
+        "Patch the parser by decorating its parse_args method"
+        @wraps(parser.parse_args)
+        def parse_args_from_gui(*args, **kwargs):
+            """Generate the GUI, and send the returned CLI to the parser"""
+            if args or kwargs:
+                return parser.old_parse_args(*args, **kwargs)
+            # Use of Interface object from gui.py
+            gui = Interface(ExtractedParser(parser))
+            return parser.old_parse_args(gui.out_args)
+        parser.old_parse_args = parser.parse_args
+        parser.parse_args = parse_args_from_gui
+        return parser
 
-    # ARGPARSE TO GUI
-    def argparse_to_gui(payload):
-        """
-        Setup GUI build from an argparse parser.
-        """
-
-        @wraps(payload)
-        def argparse_alterator(*args, **kwargs):
-            """
-            Change ArgParse.parse_args function to the gui_builder function.
-            """
-            # Saving the old argument parser for later
-            ArgumentParser.old_parse_args = ArgumentParser.parse_args
-            # Replace the parse_args function by our own, to allow call from
-            # the user script
-            ArgumentParser.parse_args = gui_builder
-            return payload(*args, **kwargs)
-
-        return argparse_alterator
-
-    # Allow to ignore clitogui in the CLI, for testing purpose
-    if "--cli" in sys.argv:
-        sys.argv.remove("--cli")
-        return parser_function
-    else:
-        if 'argparse' in sys.modules.keys():
-            return argparse_to_gui(parser_function)
+    @wraps(parser_function)
+    def decorated_function(*args, **kwargs):
+        parser = parser_function(*args, **kwargs)
+        if isinstance(parser, ArgumentParser):
+            # Saving the old argument parser for later, replacing it by our own
+            patch_parser(parser)
         else:
-            raise TypeError("Not supported parser")
+            raise TypeError("Not supported parser: " + repr(parser_func))
+        return parser
+
+    return decorated_function
