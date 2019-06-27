@@ -11,6 +11,7 @@ File containing the GUI stuff:
 ##########
 import sys
 
+import inspect
 import argparse
 
 from PyQt5.QtWidgets import *
@@ -89,6 +90,12 @@ class Interface():
                     for command in self.results[arg['name']].split(' '):
                         self.out_args.append(arg['cli'])
                         self.out_args.append(command)
+                elif callable(arg['type']):
+                    if arg['cli'] != []:
+                        self.out_args.append(arg['cli'])
+                    self.out_args.append(arg['type'](self.results[arg['name']]))
+                else:
+                    raise ValueError("Type {} is unhandled".format(arg['type']))
 
         else:
             sys.exit()
@@ -102,27 +109,7 @@ class Interface():
         """
         # Creation of arguments widgets
         for action in arguments:
-            if action['choices'] != None:
-                widget = QComboBox()
-                widget.addItems([str(i) for i in action['choices']])
-            else:
-                if action['type'] == bool:
-                    widget = QCheckBox()
-                    try:
-                        widget.setCheckState(action['default'])
-                    except:
-                        widget.setCheckState(False)
-                elif action['type'] == str:
-                    widget = QLineEdit(action['default'])
-                elif action['type'] == int:
-                    widget = QComboBox()
-                    widget.addItems([str(i) for i in range[0, 10]])
-                elif action['type'] == 'append_action':
-                    widget = QLineEdit(action['default'])
-                elif action['type'] == argparse._AppendAction:
-                    widget = QLineEdit(action['default'])
-                else:
-                    raise TypeError("Unhandled type: {}".format(action['type']))
+            widget = widget_for_type(action['type'], action['default'], action['choices'])
             widget.setToolTip(action['help'])
             parent.addRow(action['name'], widget)
 
@@ -152,3 +139,40 @@ class Interface():
             # Find widget value
             value = widget.metaObject().userProperty().read(widget)
             self.results[label] = value
+
+
+def widget_for_type(wtype:type, default_value:object, choices:iter=None) -> QWidget:
+    """Return initialized widget describing given type with given value"""
+    if choices is None:
+        if wtype is bool:
+            widget = QCheckBox()
+            try:
+                widget.setCheckState(default_value)
+            except:
+                widget.setCheckState(False)
+        elif wtype is str:
+            widget = QLineEdit(default_value)
+        elif wtype is int:
+            widget = QSpinBox()
+            maxi = 2**31 - 1
+            widget.setRange(-maxi, maxi)
+            widget.setSingleStep(1)
+            widget.setValue(default_value)
+        elif wtype == 'append_action':
+            widget = QLineEdit(default_value)
+        elif wtype is argparse._AppendAction:
+            widget = QLineEdit(default_value)
+        elif callable(wtype):  # probably an user-defined function
+            # expect that the type annotation will provide us some info
+            atype = inspect.getfullargspec(wtype).annotations.get('return', None)
+            if atype is None:  # no annotation given, we don't know what to do
+                raise TypeError("Unhandled type 'custom function {}', because it has no indication of output type".format(wtype.__name__))
+            else:
+                return widget_for_type(atype, default_value, choices)
+        else:
+            raise TypeError("Unhandled type: {}".format(wtype))
+    else:  # there is a choice to make  (between strings, it sounds necessary)
+        widget = QComboBox()
+        widget.addItems(tuple(map(str, choices)))
+        widget.setCurrentText(str(default_value))
+    return widget

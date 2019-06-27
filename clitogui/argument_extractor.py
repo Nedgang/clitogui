@@ -61,7 +61,9 @@ class ExtractedParser():
         arg['choices'] = action.choices
         arg['help'] = action.help
         arg['default'] = action.default
-        if isinstance(action, argparse._StoreAction):
+        if action.type is not None:
+            arg['type'] = action.type
+        elif isinstance(action, argparse._StoreAction):
             arg['type'] = str
         elif isinstance(action, (argparse._StoreTrueAction, \
                         argparse._StoreConstAction,\
