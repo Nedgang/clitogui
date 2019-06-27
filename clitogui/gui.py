@@ -6,9 +6,6 @@ File containing the GUI stuff:
 - Arguments return
 """
 
-##########
-# IMPORT #
-##########
 import sys
 
 import inspect
@@ -17,26 +14,19 @@ import argparse
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
-#########
-# CLASS #
-#########
-class Interface():
-    """
-    Automatized GUI using ExtractedParser object.
-    """
+
+class Interface(QDialog):
+    """Automatized GUI using ExtractedParser object"""
+
     def __init__(self, clitogui_actions):
-        """
-        Creation of the window, and associated layout.
-        """
+        """Creation of the window, and associated layout"""
+        super().__init__()
         # Arguments final values from widgets
         self.results = {}
         # CLI which will be generated from self.results
         self.out_args = []
         # Interface initialization
         self.parser = clitogui_actions
-        # GUI configuration
-        # Application initialization
-        self.application = QApplication(sys.argv)
         # Layouts definition
         self.main_layout = QVBoxLayout()
 
@@ -53,52 +43,74 @@ class Interface():
             self.main_layout.addWidget(self.tabs)
 
         # Interaction buttons
-        buttons = QDialogButtonBox(QDialogButtonBox.Ok\
-                                   |QDialogButtonBox.Cancel)
-        dialog = QDialog()
-        buttons.accepted.connect(dialog.accept)
-        buttons.rejected.connect(QCoreApplication.instance().quit)
-        self.main_layout.addWidget(buttons)
-        dialog.setLayout(self.main_layout)
+        self.buttons = QDialogButtonBox(QDialogButtonBox.Ok|QDialogButtonBox.Cancel)
+        self.buttons.accepted.connect(self.accept)
+        self.buttons.rejected.connect(QCoreApplication.instance().quit)
+        self.main_layout.addWidget(self.buttons)
+        self.setLayout(self.main_layout)
 
-        # Widgets values recuperation
-        if dialog.exec() == QDialog.Accepted:
-            if self.has_subparser:
-                self.widget_layout = self.tabs.currentWidget().layout
-                current_tab_name = self.tabs.tabText(self.tabs.currentIndex())
-                # To remplace by a clean method
-                current_tab_arguments = [arg for arg in [x['list_actions'] for\
-                                        x in self.parser.list_subparsers\
-                                       if x['name'] == current_tab_name]][0]
-                self.parser.arguments = current_tab_arguments + self.parser.arguments
-                self.out_args.append(current_tab_name)
-
-            self.__widget_recuperation__()
-
-            for arg in self.parser.arguments:
-                if arg['type'] == str:
-                    if arg['cli'] != []:
-                        self.out_args.append(arg['cli'])
-                    self.out_args.append(self.results[arg['name']])
-                elif arg['type'] == int:
-                    for i in range(0, self.results[arg['name']]):
-                        self.out_args.append(arg['cli'])
-                elif arg['type'] == bool:
-                    if self.results[arg['name']]:
-                        self.out_args.append(arg['cli'])
-                elif arg['type'] == 'append_action':
-                    for command in self.results[arg['name']].split(' '):
-                        self.out_args.append(arg['cli'])
-                        self.out_args.append(command)
-                elif callable(arg['type']):
-                    if arg['cli'] != []:
-                        self.out_args.append(arg['cli'])
-                    self.out_args.append(arg['type'](self.results[arg['name']]))
-                else:
-                    raise ValueError("Type {} is unhandled".format(arg['type']))
-
+    def exec(self):
+        # Application initialization
+        if super().exec() == QDialog.Accepted:
+            self._on_exec()
         else:
             sys.exit()
+        return self
+    def _on_exec(self):
+        "called when exited with 'OK'"
+        self.out_args = self.parse_gui()
+
+    @classmethod
+    def build_and_run(cls, *args, **kwargs):
+        app = QApplication(sys.argv)
+        dialog = cls(*args, **kwargs)
+        return dialog.exec()
+
+    def parse_gui(self) -> list:
+        "Return the list of command-line arguments described by GUI state"
+        out_args = []
+        if self.has_subparser:
+            self.widget_layout = self.tabs.currentWidget().layout
+            current_tab_name = self.tabs.tabText(self.tabs.currentIndex())
+            # To remplace by a clean method
+            current_tab_arguments = [arg for arg in [x['list_actions'] for\
+                                    x in self.parser.list_subparsers\
+                                   if x['name'] == current_tab_name]][0]
+            self.parser.arguments = current_tab_arguments + self.parser.arguments
+            out_args.append(current_tab_name)
+
+        self.__widget_recuperation__()
+
+        for arg in self.parser.arguments:
+            if arg['type'] == str:
+                if arg['cli'] != []:
+                    out_args.append(arg['cli'])
+                out_args.append(self.results[arg['name']])
+            elif arg['type'] == int:
+                out_args.append(arg['cli'])
+                out_args.append(str(self.results[arg['name']]))
+            elif arg['type'] == bool:
+                if self.results[arg['name']]:
+                    out_args.append(arg['cli'])
+            elif arg['type'] == 'append_action':
+                for command in self.results[arg['name']].split(' '):
+                    out_args.append(arg['cli'])
+                    out_args.append(command)
+            elif callable(arg['type']):
+                if arg['cli'] != []:
+                    self.out_args.append(arg['cli'])
+                self.out_args.append(arg['type'](self.results[arg['name']]))
+            else:
+                raise ValueError("Type {} is unhandled".format(arg['type']))
+        print('OUT ARGS:', out_args)
+        return out_args
+
+    @property
+    def other_outputs(self) -> []: return []  # no other outputs to communicate
+
+    @property
+    def parsed_args(self):
+        return self.parser.parser.old_parse_args(self.out_args)
 
     def __create_widgets__(self, parent, arguments):
         """
@@ -157,7 +169,7 @@ def widget_for_type(wtype:type, default_value:object, choices:iter=None) -> QWid
             maxi = 2**31 - 1
             widget.setRange(-maxi, maxi)
             widget.setSingleStep(1)
-            widget.setValue(default_value)
+            widget.setValue(int(default_value))
         elif wtype == 'append_action':
             widget = QLineEdit(default_value)
         elif wtype is argparse._AppendAction:
