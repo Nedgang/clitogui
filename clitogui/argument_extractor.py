@@ -73,7 +73,7 @@ class ExtractedParser():
         elif isinstance(action, argparse._AppendAction):
             arg['type'] = "append_action"
         elif isinstance(action, argparse._CountAction):
-            arg['type'] = int
+            arg['type'] = 'count_action'
         else:
             raise TypeError("Unsupported argument type: ", type(action))
         return arg

@@ -120,6 +120,9 @@ class Interface(QDialog):
                 for command in self.results[arg['name']].split(' '):
                     out_args.append(arg['cli'])
                     out_args.append(command)
+            elif arg['type'] == 'count_action':
+                    name, count = arg['cli'], self.results[arg['name']]
+                    out_args.extend([name] * count)
             elif callable(arg['type']):
                 if arg['cli'] != []:
                     self.out_args.append(arg['cli'])
@@ -176,6 +179,7 @@ class Interface(QDialog):
 
 def widget_for_type(wtype:type, default_value:object, choices:iter=None) -> QWidget:
     """Return initialized widget describing given type with given value"""
+    max_int = 2**31 - 1
     if choices is None:
         if wtype is bool:
             widget = QCheckBox()
@@ -187,14 +191,14 @@ def widget_for_type(wtype:type, default_value:object, choices:iter=None) -> QWid
             widget = QLineEdit(default_value)
         elif wtype is int:
             widget = QSpinBox()
-            maxi = 2**31 - 1
-            widget.setRange(-maxi, maxi)
+            widget.setRange(-max_int, max_int)
             widget.setSingleStep(1)
-            widget.setValue(int(default_value))
-        elif wtype == 'append_action':
+            widget.setValue(int(default_value or 0))
+        elif wtype == 'append_action':# or wtype is argparse._AppendAction:
             widget = QLineEdit(default_value)
-        elif wtype is argparse._AppendAction:
-            widget = QLineEdit(default_value)
+        elif wtype == 'count_action':
+            widget = widget_for_type(int, default_value, choices)
+            widget.setRange(0, max_int)
         elif callable(wtype):  # probably an user-defined function
             # expect that the type annotation will provide us some info
             atype = inspect.getfullargspec(wtype).annotations.get('return', None)
