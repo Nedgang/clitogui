@@ -106,14 +106,14 @@ class Interface(QDialog):
         self.__widget_recuperation__()
 
         for arg in self.parser.arguments:
-            if arg['type'] == str:
+            if arg['type'] is str:
                 if arg['cli'] != []:
                     out_args.append(arg['cli'])
                 out_args.append(self.results[arg['name']])
-            elif arg['type'] == int:
+            elif arg['type'] is int:
                 out_args.append(arg['cli'])
                 out_args.append(str(self.results[arg['name']]))
-            elif arg['type'] == bool:
+            elif arg['type'] is bool:
                 if self.results[arg['name']]:
                     out_args.append(arg['cli'])
             elif arg['type'] == 'append_action':
@@ -125,8 +125,8 @@ class Interface(QDialog):
                     out_args.extend([name] * count)
             elif callable(arg['type']):
                 if arg['cli'] != []:
-                    self.out_args.append(arg['cli'])
-                self.out_args.append(arg['type'](self.results[arg['name']]))
+                    out_args.append(arg['cli'])
+                out_args.append(arg['type'](self.results[arg['name']]))  # TODO: intercept argparse exception due to arg['type'] to print them in the GUI
             else:
                 raise ValueError("Type {} is unhandled".format(arg['type']))
         # print('OUT ARGS:', out_args)
