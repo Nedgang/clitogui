@@ -22,6 +22,7 @@ def cli_parser() -> argparse.ArgumentParser:
                         help='Send all possible signals')
     parser.add_argument('--thread', type=thread_number, default=1,
                         help='Number of thread to use during solving')
+    parser.add_argument('--version', action='version', version='%(prog)s 2.0')
     return parser
 
 
