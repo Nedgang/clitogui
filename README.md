@@ -45,8 +45,11 @@ Note that Argparse [custom types](https://docs.python.org/3/library/argparse.htm
 
 The type annotation will be used to decide the GUI elements to show.
 
+
 ## Supported GUI:
-- PyQt
+- [PySide2](https://pypi.org/project/PySide2)
+- [PyQt5](https://pypi.org/project/PyQt5)
+
 
 ## TODO List before bêta:
 - Add one simple test of cli parsing to Model
