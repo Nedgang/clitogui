@@ -16,7 +16,7 @@ COLORS = {
 
 
 def run_pipeline(args) -> Image:
-    for _ in range(args.nb_to_return):
+    for _ in range(args.nb_to_return or 0):
         yield Image.new(mode='RGBA', color=COLORS[args.color], size=(int(args.width), int(args.height)))
 
 
@@ -31,7 +31,7 @@ def cli():
                         help='image height')
     parser.add_argument('--outfile', '-o', type=str, default='out.png',
                         help='where to save the final image')
-    parser.add_argument('--nb-to-return', '-n', type=int, default=1,
+    parser.add_argument('--nb-to-return', '-n', action='count',
                         help='Number of time the image should be created')
     return parser
 
