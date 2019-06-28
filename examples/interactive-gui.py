@@ -31,7 +31,7 @@ def cli():
                         help='image height')
     parser.add_argument('--outfile', '-o', type=str, default='out.png',
                         help='where to save the final image')
-    parser.add_argument('--nb-to-return', '-n', action='count',
+    parser.add_argument('--nb-to-return', '-n', action='count', default=1,
                         help='Number of time the image should be created')
     # TODO: Version does not work properly: it exit after running,
     #   making it impossible to use with interactive GUI.

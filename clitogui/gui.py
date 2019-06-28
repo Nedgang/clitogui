@@ -122,8 +122,12 @@ class Interface(QDialog):
                     out_args.append(arg['cli'])
                     out_args.append(command)
             elif arg['type'] == 'count_action':
-                    name, count = arg['cli'], self.results[arg['name']]
-                    out_args.extend([name] * count)
+                name, count = arg['cli'], self.results[arg['name']]
+                # Keep a correspondance between what user see and reality:
+                #  the default for count_action gives a «base» value, to which
+                #  is added the number of found flags.
+                count -= arg['default']
+                out_args.extend([name] * count)
             elif callable(arg['type']):
                 if arg['cli'] != []:
                     out_args.append(arg['cli'])
