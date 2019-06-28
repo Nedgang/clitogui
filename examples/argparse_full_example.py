@@ -9,7 +9,7 @@ LOGLEVELS = ('DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL')
 @clitogui.on
 def cli_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description='CLI for messing with clitogui.')
-    parser.add_argument('infile', type=existant_file,
+    parser.add_argument('infile', type=existant_file, default=__file__,
                         help='file containing the graph data')
     parser.add_argument('--outfile', '-o', type=writable_file,
                         help='output file. Will be overwritted')
