@@ -235,7 +235,7 @@ def widget_for_type(wtype:type, default_value:object, choices:iter=None) -> QWid
             widget = QLineEdit(default_value)
         elif wtype == 'count_action':
             widget = widget_for_type(int, default_value, choices)
-            widget.setRange(0, max_int)
+            widget.setRange(int(default_value), max_int)  # minimal value is already set by default value
         elif callable(wtype):  # probably an user-defined function
             # expect that the type annotation will provide us some info
             fullargs = inspect.getfullargspec(wtype)
