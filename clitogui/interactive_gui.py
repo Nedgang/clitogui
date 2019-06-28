@@ -1,6 +1,7 @@
 """Definition of an interactive GUI"""
 
 import sys
+import inspect
 import argparse
 from .gui import Interface
 from .image_viewer import ImageViewer
@@ -79,6 +80,9 @@ class InteractiveInterface(Interface):
     def _on_accept(self):
         super()._on_accept()
         self.last_callback_output = self.callback(super().parsed_args())  # remember the outputs
+        if inspect.isgenerator(self.last_callback_output):
+            self.last_callback_output = tuple(self.last_callback_output)
+
 
     def update_view(self):
         "Parse GUI to get args, call callback with it"
