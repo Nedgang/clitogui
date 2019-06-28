@@ -39,9 +39,9 @@ class InteractiveInterface(Interface):
 
     """
 
-    def __init__(self, clitogui_actions, callback:callable, tabulate:bool=False, tab_names:iter=()):
+    def __init__(self, clitogui_actions, callback:callable, *, tabulate:bool=False, tab_names:iter=(), autorun:bool=True):
         """Creation of the window, and associated layout"""
-        self.callback, self.tabulate, self.tab_names = callback, tabulate, tab_names
+        self.callback, self.tabulate, self.tab_names, self.autorun = callback, tabulate, tab_names, autorun
         self.last_callback_output = ()  # nothing to show
         super().__init__(clitogui_actions)
 
@@ -60,6 +60,20 @@ class InteractiveInterface(Interface):
         new_main_layout.addLayout(left_layout)
         new_main_layout.addWidget(self.output_view)
         return new_main_layout
+
+    def _on_widget_creation(self, widget, option_name):
+        "if autorun, run the callback when a new value has been set"
+        if self.autorun:
+            if isinstance(widget, QLineEdit):
+                widget.textChanged.connect(self.update_view)
+            elif isinstance(widget, QSpinBox):
+                widget.valueChanged.connect(self.update_view)
+            elif isinstance(widget, QCheckBox):
+                widget.stateChanged.connect(self.update_view)
+            elif isinstance(widget, QComboBox):
+                widget.currentTextChanged.connect(self.update_view)
+            else:
+                raise NotImplementedError("Widget of type {} cannot be triggered on autorun".format(type(widget)))
 
 
     def make_new_outview(self):

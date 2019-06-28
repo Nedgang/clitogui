@@ -20,7 +20,7 @@ def run_pipeline(args) -> Image:
         yield Image.new(mode='RGBA', color=COLORS[args.color], size=(int(args.width), int(args.height)))
 
 
-@clitogui.interactive(run_pipeline, tabulate=True)
+@clitogui.interactive(run_pipeline, tabulate=True, autorun=True)
 def cli():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('color', choices=tuple(COLORS), type=str,

@@ -30,6 +30,7 @@ class Interface(QDialog):
         - _build_interface: to add buttons or other widgets
         - _on_accept: to define a behavior to adopt when the dialog is successfully closed
         - parsed_args: to modify the returned parsed_args object
+        - _on_widget_creation: to modify option widgets after their creation
 
     See InteractiveInterface for a living subclass example.
 
@@ -147,7 +148,12 @@ class Interface(QDialog):
         for action in arguments:
             widget = widget_for_type(action['type'], action['default'], action['choices'])
             widget.setToolTip(action['help'])
+            self._on_widget_creation(widget, action['name'])
             parent.addRow(action['name'], widget)
+
+    def _on_widget_creation(self, widget, option_name):
+        "Called for each option widget created ; do nothing ; to be overriden"
+        pass
 
     def __create_tabs__(self):
         """
