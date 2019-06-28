@@ -135,7 +135,7 @@ def widgets_from_values(obj:object, parent=None) -> [QWidget]:
     if isinstance(obj, tuple):
         # a list of widgets to print in different tabs
         for elem in obj:
-            yield widgets_from_values(elem, parent)
+            yield from widgets_from_values(elem, parent)
     elif isinstance(obj, list):
         # just a list of objects to print vertically
         frame = QFrame(parent=parent)  # will contain everything
@@ -152,5 +152,5 @@ def widgets_from_values(obj:object, parent=None) -> [QWidget]:
     elif Image and isinstance(obj, Image.Image):
         yield ImageViewer(obj, parent=parent)
     else:
-        raise NotImplementedError("Output of type '{}' is currently non implemented")
+        raise NotImplementedError("Output '{}' of type '{}' is currently non implemented".format(obj, type(obj)))
 
