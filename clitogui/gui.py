@@ -131,7 +131,7 @@ class Interface(QDialog):
             else:
                 raise ValueError("Type {} is unhandled".format(arg['type']))
         # print('OUT ARGS:', out_args)
-        return out_args
+        return list(map(str, out_args))
 
     def parsed_args(self):
         ret = self.parser.parser.old_parse_args(self.out_args)
