@@ -115,7 +115,7 @@ class OutputView(QFrame):
         if self.tabulate and isinstance(values, (list, tuple, set, frozenset, dict)):
             # let's make a tabulated view
             tabs = QTabWidget()
-            for idx, (elem, tabname) in enumerate(zip_longest(values, self.tab_names)):
+            for idx, (elem, tabname) in enumerate(zip_longest(values, self.tab_names), start=1):
                 layout = QVBoxLayout()
                 for item in widgets_from_values(elem, tabs):
                     layout.addWidget(item)
