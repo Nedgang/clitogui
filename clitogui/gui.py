@@ -207,8 +207,7 @@ def widget_for_type(wtype:type, default_value:object, choices:iter=None) -> QWid
             atype = inspect.getfullargspec(wtype).annotations.get(fullargs.args[0], None)
             if atype is None:  # no annotation given, we don't know what to do
                 raise TypeError("Unhandled type 'custom function {}', because it has no indication of output type".format(wtype.__name__))
-            else:
-                return widget_for_type(atype, default_value, choices)
+            return widget_for_type(atype, default_value, choices)
         else:
             raise TypeError("Unhandled type: {}".format(wtype))
     else:  # there is a choice to make  (between strings, it sounds necessary)
