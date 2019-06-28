@@ -42,7 +42,7 @@ class InteractiveInterface(Interface):
     def __init__(self, clitogui_actions, callback:callable, tabulate:bool=False, tab_names:iter=()):
         """Creation of the window, and associated layout"""
         self.callback, self.tabulate, self.tab_names = callback, tabulate, tab_names
-        self.last_callback_output = None
+        self.last_callback_output = ()  # nothing to show
         super().__init__(clitogui_actions)
 
     def _build_interface(self):
@@ -65,6 +65,7 @@ class InteractiveInterface(Interface):
     def make_new_outview(self):
         output_view = OutputView(self.tabulate, self.tab_names)
         output_view.setMinimumSize(300, 300)
+        output_view.show_values(self.last_callback_output)
         return output_view
 
 
@@ -92,7 +93,6 @@ class InteractiveInterface(Interface):
         old_outview.setParent(None)
         old_outview.deleteLater()
         self.output_view = self.make_new_outview()
-        self.output_view.show_values(self.last_callback_output)
         self.layout().addWidget(self.output_view)
         assert self.layout().itemAt(1).widget() is self.output_view
 
