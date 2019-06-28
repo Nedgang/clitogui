@@ -201,7 +201,10 @@ def widget_for_type(wtype:type, default_value:object, choices:iter=None) -> QWid
             widget.setRange(0, max_int)
         elif callable(wtype):  # probably an user-defined function
             # expect that the type annotation will provide us some info
-            atype = inspect.getfullargspec(wtype).annotations.get('return', None)
+            fullargs = inspect.getfullargspec(wtype)
+            if not fullargs.args:  # no argument
+                raise TypeError("Unhandled type 'custom function {}', because it has no positional argument".format(wtype.__name__))
+            atype = inspect.getfullargspec(wtype).annotations.get(fullargs.args[0], None)
             if atype is None:  # no annotation given, we don't know what to do
                 raise TypeError("Unhandled type 'custom function {}', because it has no indication of output type".format(wtype.__name__))
             else:
