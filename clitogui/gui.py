@@ -205,6 +205,8 @@ def widget_for_type(wtype:type, default_value:object, choices:iter=None) -> QWid
         elif wtype == 'count_action':
             widget = widget_for_type(int, default_value, choices)
             widget.setRange(0, max_int)
+        # elif wtype == 'version_action':
+            # widget = widget_for_type(int, default_value, choices)
         elif callable(wtype):  # probably an user-defined function
             # expect that the type annotation will provide us some info
             fullargs = inspect.getfullargspec(wtype)

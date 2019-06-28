@@ -33,6 +33,9 @@ def cli():
                         help='where to save the final image')
     parser.add_argument('--nb-to-return', '-n', action='count',
                         help='Number of time the image should be created')
+    # TODO: Version does not work properly: it exit after running,
+    #   making it impossible to use with interactive GUI.
+    parser.add_argument('--version', action='version', version='%(prog)s 2.0')
     return parser
 
 
