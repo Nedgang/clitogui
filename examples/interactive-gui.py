@@ -16,11 +16,11 @@ COLORS = {
 
 
 def run_pipeline(args) -> Image:
-    image = Image.new(mode='RGBA', color=COLORS[args.color], size=(int(args.width), int(args.height)))
-    return image  # a pillow image
+    for _ in range(args.nb_to_return):
+        yield Image.new(mode='RGBA', color=COLORS[args.color], size=(int(args.width), int(args.height)))
 
 
-@clitogui.interactive(run_pipeline, tabulate=False)
+@clitogui.interactive(run_pipeline, tabulate=True)
 def cli():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('color', choices=tuple(COLORS), type=str,
@@ -38,8 +38,7 @@ def cli():
 
 if __name__ == "__main__":
     args = cli().parse_args()
-    final_image = args._output
-    if final_image is not None:  # an image has been generated
-        if hasattr(final_image, 'save'):  # TODEL
-            final_image.save(args.outfile)  # saving of the final image, and the args leading to it
-    print('finished!')
+    final_images = args._output
+    if final_images:
+        final_images[0].save(args.outfile)  # saving of the first image
+    print('finished! ({} images returned)'.format(len(final_images)))
