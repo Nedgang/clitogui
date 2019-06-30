@@ -37,3 +37,12 @@ Just add the decorator to the main or parser function:
 
 ## How does it work?:
 TODO
+
+## Release
+Install [zest.releaser](https://zestreleaser.readthedocs.io):
+
+    pip install zest.releaser[recommended]
+
+Then, to make a new release, simply run:
+
+    fullrelease
