@@ -13,8 +13,12 @@ import argparse
 import contextlib
 
 
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+try:
+    from PySide2.QtWidgets import *
+    from PySide2.QtCore import *
+except ImportError:
+    from PyQt5.QtWidgets import *
+    from PyQt5.QtCore import *
 
 
 class Interface(QDialog):
@@ -76,7 +80,10 @@ class Interface(QDialog):
 
     def exec(self):
         # Application initialization
-        retval = super().exec()
+        try:  # Pyside way
+            retval = super().exec_()
+        except AttributeError:  # PyQt way
+            retval = super().exec()
         if retval == QDialog.Accepted:
             self._on_accept()
         else:
@@ -221,7 +228,7 @@ def widget_for_type(wtype:type, default_value:object, choices:iter=None) -> QWid
         if wtype is bool:
             widget = QCheckBox()
             try:
-                widget.setCheckState(default_value)
+                widget.setCheckState(Qt.Checked if default_value else Qt.Unchecked)
             except:
                 widget.setCheckState(False)
         elif wtype is str:

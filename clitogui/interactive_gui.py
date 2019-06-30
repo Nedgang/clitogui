@@ -11,8 +11,15 @@ try:
     from PIL import Image
 except ImportError:
     Image = None
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+
+try:
+    from PySide2.QtWidgets import *
+    from PySide2.QtCore import *
+    print('USING PYSIDE')
+except ImportError:
+    from PyQt5.QtWidgets import *
+    from PyQt5.QtCore import *
+    print('USING PYQT')
 
 
 def clear_layout(layout):
