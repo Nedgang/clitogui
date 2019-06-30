@@ -51,25 +51,32 @@ class Interface(QDialog):
         self.out_args = []
         # Interface initialization
         self.parser = clitogui_actions
+        self._version_argument = ''
         self.setLayout(self._build_interface())
 
     def _build_interface(self):
         "Must return the main layout"
-        # Layouts definition
-        main_layout = QVBoxLayout()
-
         # In case of subparser, layout containing widgets is different.
         if self.parser.list_subparsers == []:
             self.has_subparser = False
             self.widget_layout = QFormLayout()
             self.__create_widgets__(self.widget_layout, self.parser.arguments)
-            main_layout.addWidget(self.__widget_for_version())  # first, the version if any
-            main_layout.addLayout(self.widget_layout)  # then the option widgets
+            wid_options = QWidget()  # make it a widget
+            wid_options.setLayout(self.widget_layout)
+            wid_options = self.widget_layout
         else:
             self.has_subparser = True
             self.tabs = QTabWidget()
             self.__create_tabs__()
-            main_layout.addWidget(self.tabs)
+            wid_options = self.tabs
+
+        # indicate version widget
+        wid_version = self.__widget_for_version()
+
+        # Layouts definition
+        main_layout = QVBoxLayout()
+        if wid_version:  main_layout.addWidget(wid_version)
+        main_layout.addWidget(wid_options)
 
         # Interaction buttons
         self.buttons = QDialogButtonBox(QDialogButtonBox.Ok|QDialogButtonBox.Cancel)
@@ -161,11 +168,13 @@ class Interface(QDialog):
                 except SystemExit as err:
                     pass
             self.version_text = strout.getvalue()
-    def __widget_for_version(self):
+
+    def __widget_for_version(self) -> QLabel or None:
         "If the dedicated parameter exists, retrieve it and show it in a returned label"
         self.__compute_version()
-        label = QLabel(self.version_text, parent=self)
-        return label
+        if self.version_text:
+            label = QLabel(self.version_text, parent=self)
+            return label
 
 
 

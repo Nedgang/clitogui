@@ -13,6 +13,7 @@ def cli_parser() -> argparse.ArgumentParser:
     sub1.add_argument('sub1_arg', type=str)
     sub2 = subparsers.add_parser('sub2')
     sub2.add_argument('sub2_arg', type=str)
+    parser.add_argument('--version', action='version', version='%(prog)s 2.0')
     return parser
 
 
