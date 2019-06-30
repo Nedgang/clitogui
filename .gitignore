@@ -1,4 +1,6 @@
 Pipfile*
 __pycache__
+build/
 clitogui.egg-info/
+dist/
 venv/
