@@ -18,6 +18,7 @@ class ExtractedParser():
     The constructor called depended on the parser used.
     """
     def __init__(self, parser):
+        self.parser = parser
         self.arguments = []
         self.list_subparsers = []
         if isinstance(parser, argparse.ArgumentParser):
@@ -61,7 +62,9 @@ class ExtractedParser():
         arg['choices'] = action.choices
         arg['help'] = action.help
         arg['default'] = action.default
-        if isinstance(action, argparse._StoreAction):
+        if action.type is not None:
+            arg['type'] = action.type
+        elif isinstance(action, argparse._StoreAction):
             arg['type'] = str
         elif isinstance(action, (argparse._StoreTrueAction, \
                         argparse._StoreConstAction,\
@@ -70,7 +73,9 @@ class ExtractedParser():
         elif isinstance(action, argparse._AppendAction):
             arg['type'] = "append_action"
         elif isinstance(action, argparse._CountAction):
-            arg['type'] = int
+            arg['type'] = 'count_action'
+        elif isinstance(action, argparse._VersionAction):
+            arg['type'] = 'version_action'
         else:
             raise TypeError("Unsupported argument type: ", type(action))
         return arg
