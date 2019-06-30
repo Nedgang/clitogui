@@ -46,9 +46,18 @@ class InteractiveInterface(Interface):
 
     """
 
-    def __init__(self, clitogui_actions, callback:callable, *, tabulate:bool=False, tab_names:iter=(), autorun:bool=True):
-        """Creation of the window, and associated layout"""
-        self.callback, self.tabulate, self.tab_names, self.autorun = callback, tabulate, tab_names, autorun
+    def __init__(self, clitogui_actions, callback:callable, *, tabulate:bool=False, tab_names:iter=(), autorun:bool=True, minsize:(int, int)=(300, 300)):
+        """Creation of the window, and associated layout
+
+        clitogui_actions -- the ExtractedParser instance
+        callback -- the function parsed_args -> results to call whenever necessary
+        tabulate -- if output value is a list/tuple, put each value in its tab
+        tab_names -- if there is tabs, use the strings in that iterable to name them
+        autorun -- if True, will update the output view each time an option is changed
+        minsize -- minimal size of the output view
+
+        """
+        self.callback, self.tabulate, self.tab_names, self.autorun, self.minsize = callback, tabulate, tuple(tab_names), autorun, tuple(map(int, minsize))
         self.last_callback_output = ()  # nothing to show
         super().__init__(clitogui_actions)
 
@@ -85,7 +94,7 @@ class InteractiveInterface(Interface):
 
     def make_new_outview(self):
         output_view = OutputView(self.tabulate, self.tab_names)
-        output_view.setMinimumSize(300, 300)
+        output_view.setMinimumSize(*self.minsize)
         output_view.show_values(self.last_callback_output)
         return output_view
 

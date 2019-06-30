@@ -6,10 +6,12 @@ File containing the GUI stuff:
 - Arguments return
 """
 
+import io
 import sys
-
 import inspect
 import argparse
+import contextlib
+
 
 try:
     from PySide2.QtWidgets import *
@@ -61,7 +63,8 @@ class Interface(QDialog):
             self.has_subparser = False
             self.widget_layout = QFormLayout()
             self.__create_widgets__(self.widget_layout, self.parser.arguments)
-            main_layout.addLayout(self.widget_layout)
+            main_layout.addWidget(self.__widget_for_version())  # first, the version if any
+            main_layout.addLayout(self.widget_layout)  # then the option widgets
         else:
             self.has_subparser = True
             self.tabs = QTabWidget()
@@ -129,8 +132,14 @@ class Interface(QDialog):
                     out_args.append(arg['cli'])
                     out_args.append(command)
             elif arg['type'] == 'count_action':
-                    name, count = arg['cli'], self.results[arg['name']]
-                    out_args.extend([name] * count)
+                name, count = arg['cli'], self.results[arg['name']]
+                # Keep a correspondance between what user see and reality:
+                #  the default for count_action gives a «base» value, to which
+                #  is added the number of found flags.
+                count -= arg['default']
+                out_args.extend([name] * count)
+            elif arg['type'] == 'version_action':
+                pass  # don't do anything ; version is treated elsewhere
             elif callable(arg['type']):
                 if arg['cli'] != []:
                     out_args.append(arg['cli'])
@@ -140,9 +149,28 @@ class Interface(QDialog):
         # print('OUT ARGS:', out_args)
         return list(map(str, out_args))
 
+
+    def __compute_version(self):
+        "If such a parameter exists, retrieve the returned version number"
+        self.version_text = ''
+        if self._version_argument:
+            strout = io.StringIO()
+            with contextlib.redirect_stdout(strout):
+                try:
+                    self.parser.parser.old_parse_args([self._version_argument])
+                except SystemExit as err:
+                    pass
+            self.version_text = strout.getvalue()
+    def __widget_for_version(self):
+        "If the dedicated parameter exists, retrieve it and show it in a returned label"
+        self.__compute_version()
+        label = QLabel(self.version_text, parent=self)
+        return label
+
+
+
     def parsed_args(self):
-        ret = self.parser.parser.old_parse_args(self.out_args)
-        return ret
+        return self.parser.parser.old_parse_args(self.out_args)
 
     def __create_widgets__(self, parent, arguments):
         """
@@ -153,6 +181,9 @@ class Interface(QDialog):
         """
         # Creation of arguments widgets
         for action in arguments:
+            if action['type'] == 'version_action':
+                self._version_argument = action['cli']
+                continue  # don't propose a widget for that here
             widget = widget_for_type(action['type'], action['default'], action['choices'])
             widget.setToolTip(action['help'])
             self._on_widget_creation(widget, action['name'])
@@ -211,9 +242,7 @@ def widget_for_type(wtype:type, default_value:object, choices:iter=None) -> QWid
             widget = QLineEdit(default_value)
         elif wtype == 'count_action':
             widget = widget_for_type(int, default_value, choices)
-            widget.setRange(0, max_int)
-        # elif wtype == 'version_action':
-            # widget = widget_for_type(int, default_value, choices)
+            widget.setRange(int(default_value), max_int)  # minimal value is already set by default value
         elif callable(wtype):  # probably an user-defined function
             # expect that the type annotation will provide us some info
             fullargs = inspect.getfullargspec(wtype)

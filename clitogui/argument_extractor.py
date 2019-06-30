@@ -75,8 +75,7 @@ class ExtractedParser():
         elif isinstance(action, argparse._CountAction):
             arg['type'] = 'count_action'
         elif isinstance(action, argparse._VersionAction):
-            arg['type'] = bool
-            arg['default'] = False
+            arg['type'] = 'version_action'
         else:
             raise TypeError("Unsupported argument type: ", type(action))
         return arg

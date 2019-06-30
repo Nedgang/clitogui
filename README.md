@@ -1,5 +1,7 @@
 # CLItoGUI
-Python package to generate a GUI from argparse CLI.
+Python package to generate a GUI from argparse CLI, prompting user
+about the parameters, allowing him to run the program without
+using the command line arguments directly.
 
 Just add the decorator to the main or parser function:
 
@@ -18,6 +20,29 @@ Just add the decorator to the main or parser function:
         parser.add_argument('-i','--iteration', type=int, choices=[0, 1, 2],\
                             help="Iterations number")
         return parser
+
+
+## Interactive mode
+Using the `clitogui.interactive()` decorator, it is possible to get,
+instead of a just-at-start GUI that will collapse once the OK button is clicked,
+a GUI that will preview the results before printing them.
+
+    import clitogui
+
+    def compute_value(args:argparse.ArgumentParser) -> object:
+        return ...  # int, str, PIL.Image,…
+
+    @clitogui.interactive(compute_value, tabulate=True, autorun=False)
+    def create_parser() -> argparse.ArgumentParser:
+        parser = argparse.ArgumentParser(description=__doc__)
+        ...
+        return parser
+
+    args = create_parser.parse_args()
+    assert args._output == compute_value(args)  # last result is already available
+
+See the [dedicated example](examples/interactive-gui.py) for a better overview.
+
 
 ## Used packages:
 - pyQt5
@@ -60,3 +85,12 @@ The type annotation will be used to decide the GUI elements to show.
 
 ## How does it work?:
 TODO
+
+## Release
+Install [zest.releaser](https://zestreleaser.readthedocs.io):
+
+    pip install zest.releaser[recommended]
+
+Then, to make a new release, simply run:
+
+    fullrelease
