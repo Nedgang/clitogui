@@ -63,7 +63,6 @@ class Interface(QDialog):
             self.__create_widgets__(self.widget_layout, self.parser.arguments)
             wid_options = QWidget()  # make it a widget
             wid_options.setLayout(self.widget_layout)
-            wid_options = self.widget_layout
         else:
             self.has_subparser = True
             self.tabs = QTabWidget()
