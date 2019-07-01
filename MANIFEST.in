@@ -1,5 +1,6 @@
 exclude Makefile
 exclude poc.py
+include MANIFEST.py
+prune examples
 prune test
 recursive-include clitogui *.py
-include MANIFEST.py
