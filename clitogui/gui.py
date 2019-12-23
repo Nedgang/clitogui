@@ -123,7 +123,6 @@ class Interface(QDialog):
         self.__widget_recuperation__()
 
         for arg in self.parser.arguments:
-            print(arg)
             if arg['type'] is str:
                 if arg['cli'] != []:
                     out_args.append(arg['cli'])
@@ -154,7 +153,7 @@ class Interface(QDialog):
                 out_args.append(arg['type'](self.results[arg['name']]))  # TODO: intercept argparse exception due to arg['type'] to print them in the GUI
             else:
                 raise ValueError("Type {} is unhandled".format(arg['type']))
-        print('OUT ARGS:', out_args)
+        # print('OUT ARGS:', out_args)
         return list(map(str, out_args))
 
 
