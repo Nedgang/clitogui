@@ -123,7 +123,7 @@ class Interface(QDialog):
         self.__widget_recuperation__()
 
         for arg in self.parser.arguments:
-            if arg['type'] is str:
+            if arg['type'] is str or arg["type"] is "file_path" or arg["type"] is "directory_path":
                 if arg['cli'] != []:
                     out_args.append(arg['cli'])
                 out_args.append(self.results[arg['name']])
@@ -153,7 +153,7 @@ class Interface(QDialog):
                 out_args.append(arg['type'](self.results[arg['name']]))  # TODO: intercept argparse exception due to arg['type'] to print them in the GUI
             else:
                 raise ValueError("Type {} is unhandled".format(arg['type']))
-        # print('OUT ARGS:', out_args)
+        print('OUT ARGS:', out_args)
         return list(map(str, out_args))
 
 
@@ -193,10 +193,29 @@ class Interface(QDialog):
             if action['type'] == 'version_action':
                 self._version_argument = action['cli']
                 continue  # don't propose a widget for that here
-            widget = widget_for_type(action['type'], action['default'], action['choices'])
+            widget = widget_for_type(
+                action['type'], action['default'], action['choices']
+            )
             widget.setToolTip(action['help'])
-            self._on_widget_creation(widget, action['name'])
-            parent.addRow(action['name'], widget)
+            if action['type'] in {"directory_path", 'file_path'}:
+                path_callback = QFileDialog.getExistingDirectory if action['type'] == 'directory_path' else QFileDialog.getOpenFileName
+                # Widget to keep clean the file path
+                path_file = QLineEdit()
+                # Link between path_widget and widget
+                def closure(p):
+                    widget.clicked.connect(
+                        lambda: p.setText(path_callback()[0])
+                    )
+                closure(path_file)
+                # Adding both widgets on the same line
+                hbox = QHBoxLayout()
+                hbox.addWidget(path_file)
+                hbox.addWidget(widget)
+                parent.addRow(action["name"], hbox)
+            else:
+                self._on_widget_creation(widget, action['name'])
+                parent.addRow(action['name'], widget)
+            print(action["name"], action["type"], action)
 
     def _on_widget_creation(self, widget, option_name):
         "Called for each option widget created ; do nothing ; to be overriden"
@@ -226,9 +245,12 @@ class Interface(QDialog):
             # Find widget label
             label = self.widget_layout.labelForField(widget).text()
             # Find widget value
-            value = widget.metaObject().userProperty().read(widget)
+            try:
+                value = widget.metaObject().userProperty().read(widget)
+            except:
+                widget = self.widget_layout.itemAt(i, QFormLayout.FieldRole).itemAt(0).widget()
+                value = widget.metaObject().userProperty().read(widget)
             self.results[label] = value
-
 
 def widget_for_type(wtype:type, default_value:object, choices:iter=None) -> QWidget:
     """Return initialized widget describing given type with given value"""
@@ -240,6 +262,8 @@ def widget_for_type(wtype:type, default_value:object, choices:iter=None) -> QWid
                 widget.setCheckState(Qt.Checked if default_value else Qt.Unchecked)
             except:
                 widget.setCheckState(False)
+        elif wtype is "file_path" or wtype is "directory_path":
+            widget = QPushButton("...")
         elif wtype is str:
             widget = QLineEdit(default_value)
         elif wtype is int:
