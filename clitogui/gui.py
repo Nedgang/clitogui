@@ -215,7 +215,6 @@ class Interface(QDialog):
             else:
                 self._on_widget_creation(widget, action['name'])
                 parent.addRow(action['name'], widget)
-            print(action["name"], action["type"], action)
 
     def _on_widget_creation(self, widget, option_name):
         "Called for each option widget created ; do nothing ; to be overriden"
