@@ -238,17 +238,23 @@ class Interface(QDialog):
         Allow to file ExtractedParser.results with the values of widgets
         contained into widget_layout.
         """
+        # Each line in GUI's tab is an item for CLI
         for i in range(self.widget_layout.rowCount()):
-            # Find the widget at position i
-            widget = self.widget_layout.itemAt(i, QFormLayout.FieldRole).widget()
+            item = self.widget_layout.itemAt(i, QFormLayout.FieldRole)
+            # 2 cases expected: single widget, or hbox layout
+            # If path_file or path_directory
+            if item.widget() is None:
+                widget = item.layout()
+                value = widget.metaObject().userProperty().read(widget)
+            # Standard widget case
+            elif item.layout() is None:
+                widget = item.widget()
+                value = widget.metaObject().userProperty().read(widget)
+            # None of the expected cases
+            else:
+                raise ValueError("{}-th widget is {}".format(i, item))
             # Find widget label
             label = self.widget_layout.labelForField(widget).text()
-            # Find widget value
-            try:
-                value = widget.metaObject().userProperty().read(widget)
-            except:
-                widget = self.widget_layout.itemAt(i, QFormLayout.FieldRole).itemAt(0).widget()
-                value = widget.metaObject().userProperty().read(widget)
             self.results[label] = value
 
 def widget_for_type(wtype:type, default_value:object, choices:iter=None) -> QWidget:
