@@ -10,9 +10,9 @@ LOGLEVELS = ('DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL')
 def cli_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description='CLI for messing with clitogui.')
     parser.add_argument('infile', type=existant_file, default=__file__,
-                        help='file containing the graph data')
+                        help='path to file containing the graph data')
     parser.add_argument('--outfile', '-o', type=writable_file,
-                        help='output file. Will be overwritted')
+                        help='output file. As you may note, the word p.a.t.h is not in this help, therefore, clitogui does not considere it as one')
     parser.add_argument('--loglevel', choices=LOGLEVELS,
                         help='Logging level, one of ' + ', '.join(LOGLEVELS) + '.')
     parser.add_argument('--seed', type=int, default=0,
