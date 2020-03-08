@@ -62,9 +62,9 @@ class ExtractedParser():
         arg['choices'] = action.choices
         arg['help'] = action.help
         arg['default'] = action.default
-        if "path" in action.help and "file" in action.help:
+        if "path" in action.help.lower() and "file" in action.help.lower():
             arg["type"] = "file_path"
-        elif "path" in action.help and "directory" in action.help:
+        elif "path" in action.help.lower() and "directory" in action.help.lower():
             arg["type"] = "directory_path"
         elif action.type is not None:
             arg['type'] = action.type
