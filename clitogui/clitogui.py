@@ -27,6 +27,7 @@ def make_clitogui(gui_object, *args, **kwargs):
 
         def patch_parser(parser):
             "Patch the parser by decorating its parse_args method"
+
             @wraps(parser.parse_args)
             def parse_args_from_gui(*parser_args, **parser_kwargs):
                 """Generate the GUI, and send the returned CLI to the parser"""
@@ -36,6 +37,7 @@ def make_clitogui(gui_object, *args, **kwargs):
                 gui = gui_object.build_and_run(ExtractedParser(parser), *args, **kwargs)
                 return gui.parsed_args()
                 # return ret
+
             parser.old_parse_args = parser.parse_args
             parser.parse_args = parse_args_from_gui
             return parser
@@ -51,6 +53,7 @@ def make_clitogui(gui_object, *args, **kwargs):
             return parser
 
         return decorated_function
+
     return clitogui
 
 

@@ -51,7 +51,7 @@ class Interface(QDialog):
         self.out_args = []
         # Interface initialization
         self.parser = clitogui_actions
-        self._version_argument = ''
+        self._version_argument = ""
         self.setLayout(self._build_interface())
 
     def _build_interface(self):
@@ -74,11 +74,12 @@ class Interface(QDialog):
 
         # Layouts definition
         main_layout = QVBoxLayout()
-        if wid_version:  main_layout.addWidget(wid_version)
+        if wid_version:
+            main_layout.addWidget(wid_version)
         main_layout.addWidget(wid_options)
 
         # Interaction buttons
-        self.buttons = QDialogButtonBox(QDialogButtonBox.Ok|QDialogButtonBox.Cancel)
+        self.buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         self.buttons.accepted.connect(self.accept)
         self.buttons.rejected.connect(QCoreApplication.instance().quit)
         main_layout.addWidget(self.buttons)
@@ -114,52 +115,62 @@ class Interface(QDialog):
             self.widget_layout = self.tabs.currentWidget().layout
             current_tab_name = self.tabs.tabText(self.tabs.currentIndex())
             # To remplace by a clean method
-            current_tab_arguments = [arg for arg in [x['list_actions'] for\
-                                    x in self.parser.list_subparsers\
-                                   if x['name'] == current_tab_name]][0]
+            current_tab_arguments = [
+                arg
+                for arg in [
+                    x["list_actions"]
+                    for x in self.parser.list_subparsers
+                    if x["name"] == current_tab_name
+                ]
+            ][0]
             self.parser.arguments = current_tab_arguments + self.parser.arguments
             out_args.append(current_tab_name)
 
         self.__widget_recuperation__()
 
         for arg in self.parser.arguments:
-            if arg['type'] is str or arg["type"] is "file_path" or arg["type"] is "directory_path":
-                if arg['cli'] != []:
-                    out_args.append(arg['cli'])
-                out_args.append(self.results[arg['name']])
-            elif arg['type'] is int:
-                if arg['cli'] != []:
-                    out_args.append(arg['cli'])
-                out_args.append(str(self.results[arg['name']]))
-            elif arg['type'] is bool:
-                if self.results[arg['name']]:
-                    out_args.append(arg['cli'])
-            elif arg['type'] == 'append_action':
-                for command in self.results[arg['name']].split(' '):
-                    out_args.append(arg['cli'])
+            if (
+                arg["type"] is str
+                or arg["type"] is "file_path"
+                or arg["type"] is "directory_path"
+            ):
+                if arg["cli"] != []:
+                    out_args.append(arg["cli"])
+                out_args.append(self.results[arg["name"]])
+            elif arg["type"] is int:
+                if arg["cli"] != []:
+                    out_args.append(arg["cli"])
+                out_args.append(str(self.results[arg["name"]]))
+            elif arg["type"] is bool:
+                if self.results[arg["name"]]:
+                    out_args.append(arg["cli"])
+            elif arg["type"] == "append_action":
+                for command in self.results[arg["name"]].split(" "):
+                    out_args.append(arg["cli"])
                     out_args.append(command)
-            elif arg['type'] == 'count_action':
-                name, count = arg['cli'], self.results[arg['name']]
+            elif arg["type"] == "count_action":
+                name, count = arg["cli"], self.results[arg["name"]]
                 # Keep a correspondance between what user see and reality:
                 #  the default for count_action gives a «base» value, to which
                 #  is added the number of found flags.
-                count -= arg['default']
+                count -= arg["default"]
                 out_args.extend([name] * count)
-            elif arg['type'] == 'version_action':
+            elif arg["type"] == "version_action":
                 pass  # don't do anything ; version is treated elsewhere
-            elif callable(arg['type']):
-                if arg['cli'] != []:
-                    out_args.append(arg['cli'])
-                out_args.append(arg['type'](self.results[arg['name']]))  # TODO: intercept argparse exception due to arg['type'] to print them in the GUI
+            elif callable(arg["type"]):
+                if arg["cli"] != []:
+                    out_args.append(arg["cli"])
+                out_args.append(
+                    arg["type"](self.results[arg["name"]])
+                )  # TODO: intercept argparse exception due to arg['type'] to print them in the GUI
             else:
-                raise ValueError("Type {} is unhandled".format(arg['type']))
-        print('OUT ARGS:', out_args)
+                raise ValueError("Type {} is unhandled".format(arg["type"]))
+        print("OUT ARGS:", out_args)
         return list(map(str, out_args))
-
 
     def __compute_version(self):
         "If such a parameter exists, retrieve the returned version number"
-        self.version_text = ''
+        self.version_text = ""
         if self._version_argument:
             strout = io.StringIO()
             with contextlib.redirect_stdout(strout):
@@ -176,8 +187,6 @@ class Interface(QDialog):
             label = QLabel(self.version_text, parent=self)
             return label
 
-
-
     def parsed_args(self):
         return self.parser.parser.old_parse_args(self.out_args)
 
@@ -190,22 +199,25 @@ class Interface(QDialog):
         """
         # Creation of arguments widgets
         for action in arguments:
-            if action['type'] == 'version_action':
-                self._version_argument = action['cli']
+            if action["type"] == "version_action":
+                self._version_argument = action["cli"]
                 continue  # don't propose a widget for that here
             widget = widget_for_type(
-                action['type'], action['default'], action['choices']
+                action["type"], action["default"], action["choices"]
             )
-            widget.setToolTip(action['help'])
-            if action['type'] in {"directory_path", 'file_path'}:
-                path_callback = QFileDialog.getExistingDirectory if action['type'] == 'directory_path' else QFileDialog.getOpenFileName
+            widget.setToolTip(action["help"])
+            if action["type"] in {"directory_path", "file_path"}:
+                path_callback = (
+                    QFileDialog.getExistingDirectory
+                    if action["type"] == "directory_path"
+                    else QFileDialog.getOpenFileName
+                )
                 # Widget to keep clean the file path
-                path_file = QLineEdit(action['default'])
+                path_file = QLineEdit(action["default"])
                 # Link between path_widget and widget
                 def closure(p):
-                    widget.clicked.connect(
-                        lambda: p.setText(path_callback()[0])
-                    )
+                    widget.clicked.connect(lambda: p.setText(path_callback()[0]))
+
                 closure(path_file)
                 # Adding both widgets on the same line
                 hbox = QHBoxLayout()
@@ -213,8 +225,8 @@ class Interface(QDialog):
                 hbox.addWidget(widget)
                 parent.addRow(action["name"], hbox)
             else:
-                self._on_widget_creation(widget, action['name'])
-                parent.addRow(action['name'], widget)
+                self._on_widget_creation(widget, action["name"])
+                parent.addRow(action["name"], widget)
 
     def _on_widget_creation(self, widget, option_name):
         "Called for each option widget created ; do nothing ; to be overriden"
@@ -257,9 +269,12 @@ class Interface(QDialog):
             label = self.widget_layout.labelForField(widget).text()
             self.results[label] = value
 
-def widget_for_type(wtype:type, default_value:object, choices:iter=None) -> QWidget:
+
+def widget_for_type(
+    wtype: type, default_value: object, choices: iter = None
+) -> QWidget:
     """Return initialized widget describing given type with given value"""
-    max_int = 2**31 - 1
+    max_int = 2 ** 31 - 1
     if choices is None:
         if wtype is bool:
             widget = QCheckBox()
@@ -276,19 +291,31 @@ def widget_for_type(wtype:type, default_value:object, choices:iter=None) -> QWid
             widget.setRange(-max_int, max_int)
             widget.setSingleStep(1)
             widget.setValue(int(default_value or 0))
-        elif wtype == 'append_action':# or wtype is argparse._AppendAction:
+        elif wtype == "append_action":  # or wtype is argparse._AppendAction:
             widget = QLineEdit(default_value)
-        elif wtype == 'count_action':
+        elif wtype == "count_action":
             widget = widget_for_type(int, default_value, choices)
-            widget.setRange(int(default_value), max_int)  # minimal value is already set by default value
+            widget.setRange(
+                int(default_value), max_int
+            )  # minimal value is already set by default value
         elif callable(wtype):  # probably an user-defined function
             # expect that the type annotation will provide us some info
             fullargs = inspect.getfullargspec(wtype)
             if not fullargs.args:  # no argument
-                raise TypeError("Unhandled type 'custom function {}', because it has no positional argument".format(wtype.__name__))
-            atype = inspect.getfullargspec(wtype).annotations.get(fullargs.args[0], None)
+                raise TypeError(
+                    "Unhandled type 'custom function {}', because it has no positional argument".format(
+                        wtype.__name__
+                    )
+                )
+            atype = inspect.getfullargspec(wtype).annotations.get(
+                fullargs.args[0], None
+            )
             if atype is None:  # no annotation given, we don't know what to do
-                raise TypeError("Unhandled type 'custom function {}', because it has no indication of output type".format(wtype.__name__))
+                raise TypeError(
+                    "Unhandled type 'custom function {}', because it has no indication of output type".format(
+                        wtype.__name__
+                    )
+                )
             return widget_for_type(atype, default_value, choices)
         else:
             raise TypeError("Unhandled type: {}".format(wtype))

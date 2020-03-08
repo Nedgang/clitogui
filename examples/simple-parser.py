@@ -1,6 +1,6 @@
-
 import argparse
 from clitogui import clitogui
+
 
 @clitogui.clitogui
 def cli():

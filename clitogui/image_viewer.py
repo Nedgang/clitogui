@@ -45,8 +45,7 @@ class ImageView(QGraphicsView):
         delta = newPos - oldPos
         self.translate(delta.x(), delta.y())
 
-
-    def set_image(self, image:Image):
+    def set_image(self, image: Image):
         # self.png_item = QGraphicsSvgItem('tmp.svg')
         self.image = image
         self.qimage = ImageQt.ImageQt(self.image)
@@ -58,8 +57,7 @@ class ImageView(QGraphicsView):
 
 
 class ImageViewer(QWidget):
-
-    def __init__(self, image:Image=None, parent=None):
+    def __init__(self, image: Image = None, parent=None):
         super().__init__(parent=parent)
         self.setWindowTitle("Image viewer")
         self.tool_bar = QToolBar()
@@ -73,5 +71,5 @@ class ImageViewer(QWidget):
         self.setLayout(_layout)
         self.set_image(image)
 
-    def set_image(self, image:Image):
+    def set_image(self, image: Image):
         self.view.set_image(image)
