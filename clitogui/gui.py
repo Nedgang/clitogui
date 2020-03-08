@@ -200,7 +200,7 @@ class Interface(QDialog):
             if action['type'] in {"directory_path", 'file_path'}:
                 path_callback = QFileDialog.getExistingDirectory if action['type'] == 'directory_path' else QFileDialog.getOpenFileName
                 # Widget to keep clean the file path
-                path_file = QLineEdit()
+                path_file = QLineEdit(action['default'])
                 # Link between path_widget and widget
                 def closure(p):
                     widget.clicked.connect(
